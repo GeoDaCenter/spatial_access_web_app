@@ -15,8 +15,8 @@ parentdir = os.path.dirname(currentdir)
 community_analytics_dir = os.path.join(parentdir, "analytics")
 sys.path.insert(0, community_analytics_dir) 
 
-from CommunityAnalytics import *
-from p2p import *
+from spatial_access import p2p, CommunityAnalytics
+
 
 app = Flask(__name__)
 
@@ -138,7 +138,14 @@ def download_results(output_files):
 	flash(output_files)
 	return render_template("download_results.html")
 
+def generate_file_name(directory, keyword, extension="csv"):
 
+	filename = '{}/{}_0.{}'.format(directory, keyword, extension)
+	counter = 1
+	while os.path.isfile(filename):
+		filename = '{}/{}_{}.{}'.format(directory, keyword, counter, extension)
+		counter += 1
+	return filename
 
 def run_health_code(access_measures_checkbox, 
 	coverage_measures_checkbox,
@@ -160,24 +167,23 @@ def run_health_code(access_measures_checkbox,
 
 	# Create a TransitMatrix if 
 	if createTransitMatrix:
-		transit_matrix = TransitMatrix(network_type=travel_mode,
+		transit_matrix = p2p.TransitMatrix(network_type=travel_mode,
 							epsilon=epsilon,
 							walk_speed=walk_speed,
 	                    	primary_input=origin_filename,
 							primary_input_field_mapping=origin_field_mapping,
 							secondary_input=destination_filename,
-							secondary_input_field_mapping=destination_field_mapping,
-							write_to_file=True,
-							load_to_mem=True)
+							secondary_input_field_mapping=destination_field_mapping)
 
 		transit_matrix.process()
-		transit_matrix_file = transit_matrix.output_filename
+		transit_matrix_filename = generate_file_name(app.config["DATA_FOLDER"], "travel_matrix", "csv")
+		transit_matrix.write_to_file(transit_matrix_filename)
 		
 	# If any of the access metrics' checkboxes were checked,
 	# create an AccessModel object and write output
 	if access_measures_checkbox:
 
-		access_model = AccessModel(network_type=travel_mode,
+		access_model = CommunityAnalytics.AccessModel(network_type=travel_mode,
 						source_filename=origin_filename,
 	                    source_field_mapping=origin_field_mapping,
 	                    dest_filename=destination_filename,
@@ -193,7 +199,7 @@ def run_health_code(access_measures_checkbox,
 	# If any of the coverage metrics' checkboxes were checked,
 	# create an AccessModel object and write output
 	if coverage_measures_checkbox:
-		coverage_model = CoverageModel(network_type=travel_mode,
+		coverage_model = CommunityAnalytics.CoverageModel(network_type=travel_mode,
 	                    source_filename=origin_filename,
 	                    source_field_mapping=origin_field_mapping,
 	                    dest_filename=destination_filename,
