@@ -188,7 +188,7 @@ def run_health_code(access_measures_checkbox,
 	                    source_field_mapping=origin_field_mapping,
 	                    dest_filename=destination_filename,
 	                    dest_field_mapping=destination_field_mapping,
-	                    sp_matrix_filename=transit_matrix_file,
+	                    sp_matrix_filename=transit_matrix_filename,
 	                    decay_function=decay_function,
 	                    limit_categories=destination_category,
 	                    upper=int(maximum_travel_time))
@@ -204,7 +204,7 @@ def run_health_code(access_measures_checkbox,
 	                    source_field_mapping=origin_field_mapping,
 	                    dest_filename=destination_filename,
 	                    dest_field_mapping=destination_field_mapping,
-	                    sp_matrix_filename=transit_matrix_file,
+	                    sp_matrix_filename=transit_matrix_filename,
 	                    limit_categories=destination_category,
 	                    upper=int(maximum_travel_time))
 		coverage_model.calculate()
