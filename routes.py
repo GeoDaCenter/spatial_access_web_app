@@ -28,10 +28,13 @@ app.config["DATA_FOLDER"] = config('data_folder')
 
 @app.route("/", methods=['GET', 'POST'])
 def index():
+
+	print("in index")
 	form = InputForm()
 	
 	if request.method == 'POST':
 
+		print("index POST")
 		valid = True
 		# parse custom_weight_dict
 		custom_weight_dict = None
@@ -115,11 +118,13 @@ def index():
 
 	elif request.method == 'GET':
 		
-		print("GET")
+		print("index GET")
 		
 		if form.validate_on_submit:
+			print('index GET validated')
 			return render_template("index.html", form=form)
 		else:
+			print("index GET didn't validate")
 			return render_template('about.html', form=form)
 
 # @app.route('/data/<filename>')
