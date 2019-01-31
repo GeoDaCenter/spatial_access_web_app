@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, FileField, SelectField, SelectMultipleField, StringField, SubmitField, validators, ValidationError
+from wtforms import BooleanField, FileField, PasswordField, SelectField, SelectMultipleField, StringField, SubmitField, validators, ValidationError
 from customized_flask_classes import SelectFieldWithoutPreValidation, SelectMultipleFieldWithoutPreValidation
 import wtforms 
+from wtforms.validators import DataRequired, Email, Length
+
 access_checked = False
 coverage_checked = False
 ACCESS_MEASURES_LABEL = 'Access measures'
@@ -75,5 +77,9 @@ class InputForm(FlaskForm):
 	
 	submit = SubmitField('Submit')
 
+class LoginForm(FlaskForm):
+	cnetid = StringField("CNetID") #, validators=[DataRequired("Please enter your CNetID."), Email("Please enter a valid CNetID.")])
+	password = PasswordField("Password") #, validators=[DataRequired("please enter your password.")])	
+	submit = SubmitField("Sign in")
 
 
