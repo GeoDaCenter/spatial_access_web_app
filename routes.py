@@ -65,9 +65,13 @@ def login():
 			    input_form = InputForm()
 			    return redirect(url_for('access'))
 
-			except ldap.INVALID_CREDENTIALS:
-			    print("wrong password") 
+			except ldap.INVALID_CREDENTIALS as e:
+			    print("wrong password", e) 
 			    return redirect(url_for('login'))
+
+			except Exception as e:
+				print("unknown error", e)
+				return redirect(url_for('login'))
 
 			print("here")
 			
@@ -76,7 +80,7 @@ def login():
 		print("login GET")
 		return render_template("login.html", form=login_form)
 	else:
-		print("else clause")
+		print("login else clause")
 
 	
 
@@ -164,6 +168,7 @@ def access():
 				walk_speed=float(request.form["walkSpeedSlider"]),
 				custom_weight_dict=custom_weight_dict)
 			
+			print("before access download_results")
 			return download_results(output_files)
 
 		else:
@@ -172,18 +177,11 @@ def access():
 			return render_template('access.html', form=input_form)
 
 	elif request.method == 'GET':
-		
 		print("access GET")
-		input_form = InputForm()
-		print(input_form)
-		print(input_form.validate_on_submit)
-		
-		if input_form.validate_on_submit:
-			print("access GET validate")
-			return render_template("access.html", form=input_form)
-		else:
-			print("access GET not validated")
-			return render_template('access.html', form=input_form)
+		return render_template('access.html', form=input_form)
+
+	else:
+		print("access else clause")
 
 # @app.route('/data/<filename>')
 @app.route("/return-file/<path:filename>")

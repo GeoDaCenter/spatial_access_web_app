@@ -78,8 +78,8 @@ class InputForm(FlaskForm):
 	submit = SubmitField('Submit')
 
 class LoginForm(FlaskForm):
-	cnetid = StringField("CNetID") #, validators=[DataRequired("Please enter your CNetID."), Email("Please enter a valid CNetID.")])
-	password = PasswordField("Password") #, validators=[DataRequired("please enter your password.")])	
-	submit = SubmitField("Sign in")
+	cnetid = StringField("CNetID", [validators.DataRequired("Please enter your CNetID.")])
+	password = PasswordField("Password", [validators.DataRequired("Please enter your password.")])	
+	submit_login = SubmitField("Sign in")
 
 

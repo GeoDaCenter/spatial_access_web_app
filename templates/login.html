@@ -12,14 +12,28 @@
 
 				<div class="form-group">
 					{{ form.cnetid.label }}
+
+					{% if form.cnetid.errors %}
+						{% for error in form.cnetid.errors %}
+							<p class="error-message">{{ error }}</p>
+						{% endfor %}
+					{% endif %}
+
 					{{ form.cnetid }}
 				</div>	
 				<div class="form-group">
 					{{ form.password.label }}
+
+					{% if form.password.errors %}
+						{% for error in form.password.errors %}
+							<p class="error-message">{{ error }}</p>
+						{% endfor %}
+					{% endif %}
+					
 					{{ form.password }}
 				</div>	
 
-				{{ form.submit(class="btn-primary") }}
+				{{ form.submit_login(class="btn-primary") }}
 
 			</form>	
 		</div>

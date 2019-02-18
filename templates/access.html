@@ -37,18 +37,18 @@
                 </div>
                 <h2>What do you want to calculate?</h2>
                 <form method="POST" action="/" enctype="multipart/form-data">
-                    {{ access_form.hidden_tag() }}
+                    {{ form.hidden_tag() }}
 
                     <div class="form-group">
-                        {% if access_form.coverage_measures_checkbox.errors %}
-                            {% for error in access_form.coverage_measures_checkbox.errors %}
+                        {% if form.coverage_measures_checkbox.errors %}
+                            {% for error in form.coverage_measures_checkbox.errors %}
                                 <p class="error-message">{{ error }}</p>
                             {% endfor %}
                         {% endif %}
                     </div>
                     <div class="form-group">
-                    	{{ access_form.access_measures_checkbox.label }}
-                    	{{ access_form.access_measures_checkbox }}
+                    	{{ form.access_measures_checkbox.label }}
+                    	{{ form.access_measures_checkbox }}
                         <div>
                             <ul>
                                 <li>HSSA Score<i class='material-icons infoButton' id='HSSAScoreInfoButton'>info</i></li>
@@ -58,8 +58,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {{ access_form.coverage_measures_checkbox.label }}
-                        {{ access_form.coverage_measures_checkbox }}
+                        {{ form.coverage_measures_checkbox.label }}
+                        {{ form.coverage_measures_checkbox }}
                         <div>
                             <ul>
                                 <li>Number of people within access space</li>
@@ -68,8 +68,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        {{ access_form.travel_mode.label }}
-                        {{ access_form.travel_mode }}
+                        {{ form.travel_mode.label }}
+                        {{ form.travel_mode }}
                     </div>
                     <div class="form-group">
                         <label for="maximumTimeSlider">Maximum travel time (in minutes)</label>
@@ -99,8 +99,8 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            {{ access_form.decay_function.label }}
-                            {{ access_form.decay_function }}
+                            {{ form.decay_function.label }}
+                            {{ form.decay_function }}
                         </div>
                         <div class="form-group">
                             <label id="epsilonValueSliderLabel" for="epsilonValueSlider">Epsilon value</label>
@@ -115,8 +115,8 @@
                             {% endif %}
                         </div>
                         <div class="form-group">
-                            {{ access_form.custom_weight_dict.label }}
-                            {{ access_form.custom_weight_dict }}
+                            {{ form.custom_weight_dict.label }}
+                            {{ form.custom_weight_dict }}
                         </div>
 
                     </div>
@@ -126,30 +126,30 @@
                     <h2>Select your origin file</h2>
 
                     <div class="form-group">
-                        {{ access_form.origin_file.label }}
-                        {% if access_form.origin_file.errors %}
-                            {% for error in foaccess_formrm.origin_file.errors %}
+                        {{ form.origin_file.label }}
+                        {% if form.origin_file.errors %}
+                            {% for error in foformrm.origin_file.errors %}
                                 <p class="error-message">{{ error }}</p>
                             {% endfor %}
                         {% endif %}
-                        {{ access_form.origin_file }}
+                        {{ form.origin_file }}
                     </div>
 
                     <div class="form-group">
-                        {{ access_form.origin_unique_id_field.label }}
-                        {{ access_form.origin_unique_id_field }}
+                        {{ form.origin_unique_id_field.label }}
+                        {{ form.origin_unique_id_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.origin_latitude_field.label }}
-                        {{ access_form.origin_latitude_field }}
+                        {{ form.origin_latitude_field.label }}
+                        {{ form.origin_latitude_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.origin_longitude_field.label }}
-                        {{ access_form.origin_longitude_field }}
+                        {{ form.origin_longitude_field.label }}
+                        {{ form.origin_longitude_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.origin_population_field.label }}
-                        {{ access_form.origin_population_field }}
+                        {{ form.origin_population_field.label }}
+                        {{ form.origin_population_field }}
                     </div>
 
                     <!-- DESTINATION FIELDS -->
@@ -157,40 +157,40 @@
                     <h2>Select your destination file</h2>
 
                     <div class="form-group">
-                        {{ access_form.destination_file.label }}
-                        {% if access_form.destination_file.errors %}
-                            {% for error in access_form.destination_file.errors %}
+                        {{ form.destination_file.label }}
+                        {% if form.destination_file.errors %}
+                            {% for error in form.destination_file.errors %}
                                 <p class="error-message">{{ error }}</p>
                             {% endfor %}
                         {% endif %}
-                        {{ access_form.destination_file }}
+                        {{ form.destination_file }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.destination_unique_id_field.label }}
-                        {{ access_form.destination_unique_id_field }}
+                        {{ form.destination_unique_id_field.label }}
+                        {{ form.destination_unique_id_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.destination_latitude_field.label }}
-                        {{ access_form.destination_latitude_field }}
+                        {{ form.destination_latitude_field.label }}
+                        {{ form.destination_latitude_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.destination_longitude_field.label }}
-                        {{ access_form.destination_longitude_field }}
+                        {{ form.destination_longitude_field.label }}
+                        {{ form.destination_longitude_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.destination_target_field.label }}
-                        {{ access_form.destination_target_field }}
+                        {{ form.destination_target_field.label }}
+                        {{ form.destination_target_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.destination_category_field.label }}
-                        {{ access_form.destination_category_field }}
+                        {{ form.destination_category_field.label }}
+                        {{ form.destination_category_field }}
                     </div>
                     <div class="form-group">
-                        {{ access_form.destination_categories.label }}
-                        {{ access_form.destination_categories }}
+                        {{ form.destination_categories.label }}
+                        {{ form.destination_categories }}
                     </div>
 
-                    {{ access_form.submit(class="btn-primary") }}
+                    {{ form.submit(class="btn-primary") }}
 
                 </form>
             </div>
