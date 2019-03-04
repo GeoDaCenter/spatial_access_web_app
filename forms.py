@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, FileField, SelectField, SelectMultipleField, StringField, SubmitField, validators, ValidationError
 from customized_flask_classes import SelectFieldWithoutPreValidation, SelectMultipleFieldWithoutPreValidation
-import wtforms 
+
 access_checked = False
 coverage_checked = False
 ACCESS_MEASURES_LABEL = 'Access measures'

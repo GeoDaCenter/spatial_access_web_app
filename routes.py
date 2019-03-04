@@ -1,12 +1,11 @@
-from flask import Flask, render_template, request, session, redirect, url_for, send_file, flash
+from flask import Flask, render_template, request, send_file, flash
 from forms import InputForm
-import pandas as pd
 import wtforms
 
 from decouple import config
 
 from werkzeug.utils import secure_filename
-from logging.config import dictConfig
+# from logging.config import dictConfig
 
 # add folders to PATH so access/coverage modules can be accessed
 import os, sys, inspect
@@ -15,7 +14,7 @@ parentdir = os.path.dirname(currentdir)
 community_analytics_dir = os.path.join(parentdir, "analytics")
 sys.path.insert(0, community_analytics_dir) 
 
-from spatial_access import p2p, CommunityAnalytics
+from spatial_access import p2p, Models
 
 
 app = Flask(__name__)
@@ -188,7 +187,7 @@ def run_health_code(access_measures_checkbox,
 	# create an AccessModel object and write output
 	if access_measures_checkbox:
 
-		access_model = CommunityAnalytics.AccessModel(network_type=travel_mode,
+		access_model = AccessModel(network_type=travel_mode,
 						source_filename=origin_filename,
 	                    source_field_mapping=origin_field_mapping,
 	                    dest_filename=destination_filename,
@@ -204,7 +203,7 @@ def run_health_code(access_measures_checkbox,
 	# If any of the coverage metrics' checkboxes were checked,
 	# create an AccessModel object and write output
 	if coverage_measures_checkbox:
-		coverage_model = CommunityAnalytics.CoverageModel(network_type=travel_mode,
+		coverage_model = Coverage(network_type=travel_mode,
 	                    source_filename=origin_filename,
 	                    source_field_mapping=origin_field_mapping,
 	                    dest_filename=destination_filename,
