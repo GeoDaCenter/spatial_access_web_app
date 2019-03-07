@@ -71,21 +71,34 @@ def index():
 			
 			# create a dictionary associating field names used in the health code to the
 			# fields in the data specified by the user
-			origin_field_mapping = {"idx": form.origin_unique_id_field.data,
-			"population": form.origin_population_field.data,
+			matrix_origin_field_mapping = {
+			"idx": form.origin_unique_id_field.data,
 			"lat": form.origin_latitude_field.data,
 			"lon": form.origin_longitude_field.data}
-			
+
 			destination_target_field = form.destination_target_field.data
 			if form.coverage_measures_checkbox.data is False:
 				destination_target_field = ""
 			
-			destination_field_mapping = {"idx": form.destination_unique_id_field.data,
-			"target": destination_target_field,
-			"category": form.destination_category_field.data,
+			matrix_destination_field_mapping = {
+			"idx": form.destination_unique_id_field.data,
 			"lat": form.destination_latitude_field.data,
 			"lon": form.destination_longitude_field.data}
 
+			model_origin_field_mapping = {
+			"idx": form.origin_unique_id_field.data,
+			"lat": form.origin_latitude_field.data,
+			"lon": form.origin_longitude_field.data,
+			"population": form.origin_population_field.data}
+
+			model_destination_field_mapping = {
+			"idx": form.destination_unique_id_field.data,
+			"lat": form.destination_latitude_field.data,
+			"lon": form.destination_longitude_field.data,
+			"target": form.destination_target_field,
+			"category": form.destination_category_field.data
+			}
+			
 			# update file paths to those on the server
 			origin_filename = os.path.join(app.config["UPLOAD_FOLDER"], origin_filename)
 			destination_filename = os.path.join(app.config["UPLOAD_FOLDER"], destination_filename)
@@ -100,10 +113,11 @@ def index():
 				form.travel_mode.data,
 				maximum_travel_time,
 				origin_filename, 
-				origin_field_mapping,
+				matrix_origin_field_mapping,
 				destination_filename,
-				destination_field_mapping,
-				destination_category=categories,
+				matrix_destination_field_mapping,
+				model_origin_field_mapping,
+				model_destination_field_mapping,
 				decay_function=form.decay_function.data,
 				epsilon=float(request.form["epsilonValueSlider"]),
 				walk_speed=float(request.form["walkSpeedSlider"]),
@@ -156,47 +170,46 @@ def run_health_code(access_measures_checkbox,
 	travel_mode,
 	maximum_travel_time,
 	origin_filename,
-	origin_field_mapping,
+	matrix_origin_field_mapping,
 	destination_filename,
-	destination_field_mapping,
-	destination_category=None,
+	matrix_destination_field_mapping,
+	model_origin_field_mapping,
+	model_destination_field_mapping,
 	decay_function=None,
 	epsilon=None,
 	walk_speed=None,
 	custom_weight_dict=None):
 
-	createTransitMatrix = True
+	create_transit_matrix = True
 	transit_matrix_file = "/Users/georgeyoliver/Documents/GitHub/CSDS/GeoDaCenter/contracts/analytics/data/walk_full_results_3.csv"
 	output_files = []
 
 	# Create a TransitMatrix if 
-	if createTransitMatrix:
+	if create_transit_matrix:
 		transit_matrix = p2p.TransitMatrix(network_type=travel_mode,
 							epsilon=epsilon,
-							walk_speed=walk_speed,
+							# walk_speed=walk_speed,
 	                    	primary_input=origin_filename,
-							primary_input_field_mapping=origin_field_mapping,
+							primary_hints=matrix_origin_field_mapping,
 							secondary_input=destination_filename,
-							secondary_input_field_mapping=destination_field_mapping)
+							secondary_hints=matrix_destination_field_mapping)
 
 		transit_matrix.process()
-		transit_matrix_filename = generate_file_name(app.config["DATA_FOLDER"], "travel_matrix", "csv")
-		transit_matrix.write_to_file(transit_matrix_filename)
+		transit_matrix_filename = generate_file_name(app.config["DATA_FOLDER"], "travel_matrix", "h5")
+		transit_matrix.write_h5(transit_matrix_filename)
 		
 	# If any of the access metrics' checkboxes were checked,
 	# create an AccessModel object and write output
 	if access_measures_checkbox:
 
-		access_model = AccessModel(network_type=travel_mode,
-						source_filename=origin_filename,
-	                    source_field_mapping=origin_field_mapping,
-	                    dest_filename=destination_filename,
-	                    dest_field_mapping=destination_field_mapping,
+		access_model = Models.AccessModel(network_type=travel_mode,
+						sources_filename=origin_filename,
+	                    destinations_filename=destination_filename,
+	                    source_column_names=model_origin_field_mapping,
+	                    dest_column_names=model_destination_field_mapping,
 	                    sp_matrix_filename=transit_matrix_filename,
-	                    decay_function=decay_function,
-	                    limit_categories=destination_category,
-	                    upper=int(maximum_travel_time))
-		access_model.calculate(custom_weight_dict=custom_weight_dict)
+	                    decay_function=decay_function)
+		access_model.calculate(upper_threshold=int(maximum_travel_time), category_weight_dict=custom_weight_dict)
 		access_model.write_csv()
 		output_files.append(access_model.output_filename)
 
@@ -204,9 +217,9 @@ def run_health_code(access_measures_checkbox,
 	# create an AccessModel object and write output
 	if coverage_measures_checkbox:
 		coverage_model = Coverage(network_type=travel_mode,
-	                    source_filename=origin_filename,
+	                    sources_filename=origin_filename,
 	                    source_field_mapping=origin_field_mapping,
-	                    dest_filename=destination_filename,
+	                    destinations_filename=destination_filename,
 	                    dest_field_mapping=destination_field_mapping,
 	                    sp_matrix_filename=transit_matrix_filename,
 	                    limit_categories=destination_category,
