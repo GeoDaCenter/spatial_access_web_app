@@ -28,19 +28,15 @@ app.config["DATA_FOLDER"] = config('data_folder')
 @app.route("/", methods=['GET', 'POST'])
 def index():
 
-	print("in index")
 	form = InputForm()
 	
 	if request.method == 'POST':
 
-		print("index POST")
 		valid = True
 		# parse custom_weight_dict
-		custom_weight_dict = None
+		custom_weight_dict = {"Hospitals": [1,1,1,1,1,1,1,1], "Federally Qualified Health Centers": [1,1,1,1,1,1,1,1]}		
 		if form.custom_weight_dict.data != "":
 			try:
-				custom_weight_dict = {}
-				
 				# If user has input more than just a single default list, it'll be separated by ;
 				if form.custom_weight_dict.data.find(";") != -1:
 					custom_lists = form.custom_weight_dict.data.split(";")
@@ -95,17 +91,21 @@ def index():
 			"idx": form.destination_unique_id_field.data,
 			"lat": form.destination_latitude_field.data,
 			"lon": form.destination_longitude_field.data,
-			"target": form.destination_target_field,
+			"capacity": form.destination_target_field.data,
 			"category": form.destination_category_field.data
 			}
 			
+			if form.coverage_measures_checkbox.data is False:
+				model_origin_field_mapping["population"] = "skip";
+				model_destination_field_mapping["capacity"] = "skip";
+
 			# update file paths to those on the server
 			origin_filename = os.path.join(app.config["UPLOAD_FOLDER"], origin_filename)
 			destination_filename = os.path.join(app.config["UPLOAD_FOLDER"], destination_filename)
 			categories = form.destination_categories.data
 			for x in form.destination_categories:
 				print(x)
-			maximum_travel_time = request.form["maximumTimeSlider"]
+			maximum_travel_time = int(request.form["maximumTimeSlider"]) * 60
 			
 			# execute health code
 			output_files = run_health_code(form.access_measures_checkbox.data,
@@ -121,7 +121,8 @@ def index():
 				decay_function=form.decay_function.data,
 				epsilon=float(request.form["epsilonValueSlider"]),
 				walk_speed=float(request.form["walkSpeedSlider"]),
-				custom_weight_dict=custom_weight_dict)
+				custom_weight_dict=custom_weight_dict, 
+				categories=categories)
 			
 			return download_results(output_files)
 
@@ -130,8 +131,6 @@ def index():
 			return render_template('index.html', form=form)
 
 	elif request.method == 'GET':
-		
-		print("index GET")
 		
 		if form.validate_on_submit:
 			print('index GET validated')
@@ -178,7 +177,8 @@ def run_health_code(access_measures_checkbox,
 	decay_function=None,
 	epsilon=None,
 	walk_speed=None,
-	custom_weight_dict=None):
+	custom_weight_dict=None,
+	categories=None):
 
 	create_transit_matrix = True
 	transit_matrix_file = "/Users/georgeyoliver/Documents/GitHub/CSDS/GeoDaCenter/contracts/analytics/data/walk_full_results_3.csv"
@@ -209,24 +209,25 @@ def run_health_code(access_measures_checkbox,
 	                    dest_column_names=model_destination_field_mapping,
 	                    sp_matrix_filename=transit_matrix_filename,
 	                    decay_function=decay_function)
-		access_model.calculate(upper_threshold=int(maximum_travel_time), category_weight_dict=custom_weight_dict)
-		access_model.write_csv()
-		output_files.append(access_model.output_filename)
+		access_model.calculate(upper_threshold=maximum_travel_time, category_weight_dict=custom_weight_dict)
+		access_file_name = generate_file_name(app.config["DATA_FOLDER"], "access_scores", "csv")
+		access_model.model_results.to_csv(access_file_name)
+		output_files.append(access_file_name)
 
 	# If any of the coverage metrics' checkboxes were checked,
 	# create an AccessModel object and write output
 	if coverage_measures_checkbox:
-		coverage_model = Coverage(network_type=travel_mode,
+		coverage_model = Models.Coverage(network_type=travel_mode,
 	                    sources_filename=origin_filename,
-	                    source_field_mapping=origin_field_mapping,
 	                    destinations_filename=destination_filename,
-	                    dest_field_mapping=destination_field_mapping,
+	                    source_column_names=model_origin_field_mapping,
+	                    dest_column_names=model_destination_field_mapping,
 	                    sp_matrix_filename=transit_matrix_filename,
-	                    limit_categories=destination_category,
-	                    upper=int(maximum_travel_time))
-		coverage_model.calculate()
-		coverage_model.write_csv()
-		output_files.append(coverage_model.output_filename)
+	                    categories=categories)
+		coverage_model.calculate(upper_threshold=maximum_travel_time)
+		coverage_file_name = generate_file_name(app.config["DATA_FOLDER"], "coverage_values", "csv")
+		coverage_model.model_results.to_csv(coverage_file_name)
+		output_files.append(coverage_file_name)
 
 	return output_files
     
