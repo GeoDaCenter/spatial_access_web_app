@@ -20,7 +20,7 @@ import spatial_access
 
 app = Flask(__name__)
 
-to handle csrf 
+# to handle csrf 
 app.secret_key = "development-key"
 # app.config["UPLOAD_FOLDER"] = config('upload_folder')
 # app.config["DATA_FOLDER"] = config('data_folder')
