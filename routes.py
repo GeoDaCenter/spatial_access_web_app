@@ -15,14 +15,21 @@ community_analytics_dir = os.path.join(parentdir, "analytics")
 sys.path.insert(0, community_analytics_dir) 
 
 from spatial_access import p2p, Models
+import spatial_access
 
 
 app = Flask(__name__)
 
 # to handle csrf 
-app.secret_key = "development-key"
-app.config["UPLOAD_FOLDER"] = config('upload_folder')
-app.config["DATA_FOLDER"] = config('data_folder')
+# app.secret_key = "development-key"
+# app.config["UPLOAD_FOLDER"] = config('upload_folder')
+# app.config["DATA_FOLDER"] = config('data_folder')
+INPUTS_FOLDER = os.path.join(os.path.realpath(__file__), "inputs")
+OUTPUTS_FOLDER = os.path.join(os.path.realpath(__file__), "outputs")
+if not os.path.exists(INPUTS_FOLDER):
+	os.mkdir(INPUTS_FOLDER)
+if not os.path.exists(OUTPUTS_FOLDER):
+	os.mkdir(OUTPUTS_FOLDER)
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -34,7 +41,13 @@ def index():
 
 		valid = True
 		# parse custom_weight_dict
-		custom_weight_dict = {"Hospitals": [1,1,1,1,1,1,1,1], "Federally Qualified Health Centers": [1,1,1,1,1,1,1,1]}		
+		category_weight_dict = {"Hospitals": [3,2,1], "Federally Qualified Health Centers": [3,2,1]}
+		category_weight_dict = {"Hospitals": [1,1,1,1,1,1,1,1,1,1], 
+			"Federally Qualified Health Centers": [1,1,1,1,1,1,1,1,1,1],
+			"All Free Health Clinics": [1,1,1,1,1,1,1,1,1,1],
+			"Other Health Providers": [1,1,1,1,1,1,1,1,1,1],
+			"School-Based Health Centers": [1,1,1,1,1,1,1,1,1,1]}
+
 		if form.custom_weight_dict.data != "":
 			try:
 				# If user has input more than just a single default list, it'll be separated by ;
@@ -44,13 +57,13 @@ def index():
 						list_name, values_string = ls.split(":")
 						values_list_string = values_string.split(",")
 						values_list = [float(value.strip()) for value in values_list_string]
-						custom_weight_dict[list_name.strip()] = values_list
+						category_weight_dict[list_name.strip()] = values_list
 				# If a user has just input a default list
 				else:
 					list_name, values_string = form.custom_weight_dict.data.split(":")
 					values_list_string = values_string.split(",")
 					values_list = [float(value.strip()) for value in values_list_string]	
-					custom_weight_dict["Default"] = values_list
+					category_weight_dict["Default"] = values_list
 			except:
 				print("Error parsing custom weight dictionary")
 				valid = False
@@ -60,10 +73,10 @@ def index():
 			# retrieve file names and upload data to the server
 			origin_file = request.files['origin_file']
 			origin_filename = secure_filename(origin_file.filename)
-			origin_file.save(os.path.join(app.config['UPLOAD_FOLDER'], origin_filename))
+			origin_file.save(os.path.join(INPUTS_FOLDER, origin_filename))
 			destination_file = request.files['destination_file']
 			destination_filename = secure_filename(destination_file.filename)
-			destination_file.save(os.path.join(app.config['UPLOAD_FOLDER'], destination_filename))
+			destination_file.save(os.path.join(INPUTS_FOLDER, destination_filename))
 			
 			# create a dictionary associating field names used in the health code to the
 			# fields in the data specified by the user
@@ -100,13 +113,14 @@ def index():
 				model_destination_field_mapping["capacity"] = "skip";
 
 			# update file paths to those on the server
-			origin_filename = os.path.join(app.config["UPLOAD_FOLDER"], origin_filename)
-			destination_filename = os.path.join(app.config["UPLOAD_FOLDER"], destination_filename)
+			origin_filename = os.path.join(INPUTS_FOLDER, origin_filename)
+			destination_filename = os.path.join(INPUTS_FOLDER, destination_filename)
 			categories = form.destination_categories.data
 			for x in form.destination_categories:
 				print(x)
 			maximum_travel_time = int(request.form["maximumTimeSlider"]) * 60
-			
+			print("yaaas")
+			print(float(request.form["epsilonValueSlider"]))
 			# execute health code
 			output_files = run_health_code(form.access_measures_checkbox.data,
 				form.coverage_measures_checkbox.data,
@@ -121,7 +135,7 @@ def index():
 				decay_function=form.decay_function.data,
 				epsilon=float(request.form["epsilonValueSlider"]),
 				walk_speed=float(request.form["walkSpeedSlider"]),
-				custom_weight_dict=custom_weight_dict, 
+				category_weight_dict=category_weight_dict, 
 				categories=categories)
 			
 			return download_results(output_files)
@@ -145,7 +159,7 @@ def return_file(filename):
 	
 	if filename.startswith('app'):  # Flask is stripping of the leading slash
 		filename = '/' + filename
-	if (not (filename.startswith(app.config['DATA_FOLDER']) and filename.endswith('.csv'))) or '..' in filename:
+	if (not (filename.startswith(DATA_FOLDER) and filename.endswith('.csv'))) or '..' in filename:
 		raise ValueError("Invalid file name: %s" % filename)
 	else:
 		return send_file(filename, as_attachment=True)
@@ -177,13 +191,21 @@ def run_health_code(access_measures_checkbox,
 	decay_function=None,
 	epsilon=None,
 	walk_speed=None,
-	custom_weight_dict=None,
+	category_weight_dict=None,
 	categories=None):
 
 	create_transit_matrix = True
 	transit_matrix_file = "/Users/georgeyoliver/Documents/GitHub/CSDS/GeoDaCenter/contracts/analytics/data/walk_full_results_3.csv"
 	output_files = []
 
+	print("transit matrix inputs")
+	print(travel_mode)
+	print(origin_filename)
+	print(matrix_origin_field_mapping)
+	print(destination_filename)
+	print(matrix_destination_field_mapping)
+	print(epsilon)
+	
 	# Create a TransitMatrix if 
 	if create_transit_matrix:
 		transit_matrix = p2p.TransitMatrix(network_type=travel_mode,
@@ -195,13 +217,25 @@ def run_health_code(access_measures_checkbox,
 							secondary_hints=matrix_destination_field_mapping)
 
 		transit_matrix.process()
-		transit_matrix_filename = generate_file_name(app.config["DATA_FOLDER"], "travel_matrix", "h5")
+		transit_matrix_filename = generate_file_name(DATA_FOLDER, "travel_matrix", "h5")
 		transit_matrix.write_h5(transit_matrix_filename)
-		
+	
+	print("\naccess inputs")
+	print(travel_mode)
+	print(origin_filename)
+	print(destination_filename)
+	print(model_origin_field_mapping)
+	print(model_destination_field_mapping)
+	print(transit_matrix_filename)
+	print(decay_function)
+	print(maximum_travel_time)
+	print(category_weight_dict)
+
+	print(spatial_access.__file__)
+
 	# If any of the access metrics' checkboxes were checked,
 	# create an AccessModel object and write output
 	if access_measures_checkbox:
-
 		access_model = Models.AccessModel(network_type=travel_mode,
 						sources_filename=origin_filename,
 	                    destinations_filename=destination_filename,
@@ -209,8 +243,8 @@ def run_health_code(access_measures_checkbox,
 	                    dest_column_names=model_destination_field_mapping,
 	                    sp_matrix_filename=transit_matrix_filename,
 	                    decay_function=decay_function)
-		access_model.calculate(upper_threshold=maximum_travel_time, category_weight_dict=custom_weight_dict)
-		access_file_name = generate_file_name(app.config["DATA_FOLDER"], "access_scores", "csv")
+		access_model.calculate(upper_threshold=maximum_travel_time, category_weight_dict=category_weight_dict)
+		access_file_name = generate_file_name(DATA_FOLDER, "access", "csv")
 		access_model.model_results.to_csv(access_file_name)
 		output_files.append(access_file_name)
 
@@ -225,7 +259,7 @@ def run_health_code(access_measures_checkbox,
 	                    sp_matrix_filename=transit_matrix_filename,
 	                    categories=categories)
 		coverage_model.calculate(upper_threshold=maximum_travel_time)
-		coverage_file_name = generate_file_name(app.config["DATA_FOLDER"], "coverage_values", "csv")
+		coverage_file_name = generate_file_name(DATA_FOLDER, "coverage", "csv")
 		coverage_model.model_results.to_csv(coverage_file_name)
 		output_files.append(coverage_file_name)
 
