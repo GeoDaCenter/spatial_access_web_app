@@ -159,7 +159,7 @@ def return_file(filename):
 	
 	if filename.startswith('app'):  # Flask is stripping of the leading slash
 		filename = '/' + filename
-	if (not (filename.startswith(DATA_FOLDER) and filename.endswith('.csv'))) or '..' in filename:
+	if (not (filename.startswith(OUTPUTS_FOLDER) and filename.endswith('.csv'))) or '..' in filename:
 		raise ValueError("Invalid file name: %s" % filename)
 	else:
 		return send_file(filename, as_attachment=True)
@@ -217,7 +217,7 @@ def run_health_code(access_measures_checkbox,
 							secondary_hints=matrix_destination_field_mapping)
 
 		transit_matrix.process()
-		transit_matrix_filename = generate_file_name(DATA_FOLDER, "travel_matrix", "h5")
+		transit_matrix_filename = generate_file_name(OUTPUTS_FOLDER, "travel_matrix", "h5")
 		transit_matrix.write_h5(transit_matrix_filename)
 	
 	print("\naccess inputs")
@@ -244,7 +244,7 @@ def run_health_code(access_measures_checkbox,
 	                    sp_matrix_filename=transit_matrix_filename,
 	                    decay_function=decay_function)
 		access_model.calculate(upper_threshold=maximum_travel_time, category_weight_dict=category_weight_dict)
-		access_file_name = generate_file_name(DATA_FOLDER, "access", "csv")
+		access_file_name = generate_file_name(OUTPUTS_FOLDER, "access", "csv")
 		access_model.model_results.to_csv(access_file_name)
 		output_files.append(access_file_name)
 
@@ -259,7 +259,7 @@ def run_health_code(access_measures_checkbox,
 	                    sp_matrix_filename=transit_matrix_filename,
 	                    categories=categories)
 		coverage_model.calculate(upper_threshold=maximum_travel_time)
-		coverage_file_name = generate_file_name(DATA_FOLDER, "coverage", "csv")
+		coverage_file_name = generate_file_name(OUTPUTS_FOLDER, "coverage", "csv")
 		coverage_model.model_results.to_csv(coverage_file_name)
 		output_files.append(coverage_file_name)
 
