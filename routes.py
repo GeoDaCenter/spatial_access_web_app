@@ -156,7 +156,7 @@ def index():
 # @app.route('/data/<filename>')
 @app.route("/return-file/<path:filename>")
 def return_file(filename):
-	
+	print(flask.root_path)
 	if filename.startswith('app'):  # Flask is stripping of the leading slash
 		filename = '/' + filename
 	if (not (filename.startswith(OUTPUTS_FOLDER) and filename.endswith('.csv'))) or '..' in filename:
