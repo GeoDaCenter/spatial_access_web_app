@@ -24,8 +24,8 @@ app = Flask(__name__)
 # app.secret_key = "development-key"
 # app.config["UPLOAD_FOLDER"] = config('upload_folder')
 # app.config["DATA_FOLDER"] = config('data_folder')
-INPUTS_FOLDER = os.path.join(os.path.realpath(__file__), "inputs")
-OUTPUTS_FOLDER = os.path.join(os.path.realpath(__file__), "outputs")
+INPUTS_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), "inputs")
+OUTPUTS_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), "outputs")
 if not os.path.exists(INPUTS_FOLDER):
 	os.mkdir(INPUTS_FOLDER)
 if not os.path.exists(OUTPUTS_FOLDER):
