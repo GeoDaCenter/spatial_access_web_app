@@ -42,7 +42,7 @@ def index():
 		valid = True
 		# parse custom_weight_dict
 		category_weight_dict = {"Hospitals": [3,2,1], "Federally Qualified Health Centers": [3,2,1]}
-		weight_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+		weight_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 		category_weight_dict = {"Hospitals": weight_list, 
 			"Federally Qualified Health Centers": weight_list,
 			"All Free Health Clinics": weight_list,
