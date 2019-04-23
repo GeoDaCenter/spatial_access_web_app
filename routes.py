@@ -42,11 +42,13 @@ def index():
 		valid = True
 		# parse custom_weight_dict
 		category_weight_dict = {"Hospitals": [3,2,1], "Federally Qualified Health Centers": [3,2,1]}
-		category_weight_dict = {"Hospitals": [1,1,1,1,1,1,1,1,1,1], 
-			"Federally Qualified Health Centers": [1,1,1,1,1,1,1,1,1,1],
-			"All Free Health Clinics": [1,1,1,1,1,1,1,1,1,1],
-			"Other Health Providers": [1,1,1,1,1,1,1,1,1,1],
-			"School-Based Health Centers": [1,1,1,1,1,1,1,1,1,1]}
+		weight_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+		category_weight_dict = {"Hospitals": weight_list, 
+			"Federally Qualified Health Centers": weight_list,
+			"All Free Health Clinics": weight_list,
+			"Other Health Providers": weight_list,
+			"School-Based Health Centers": weight_list}
+		category_weight_dict = None
 
 		if form.custom_weight_dict.data != "":
 			try:
@@ -205,20 +207,21 @@ def run_health_code(access_measures_checkbox,
 	print(destination_filename)
 	print(matrix_destination_field_mapping)
 	print(epsilon)
+	print(walk_speed)
 	
 	# Create a TransitMatrix if 
 	if create_transit_matrix:
 		transit_matrix = p2p.TransitMatrix(network_type=travel_mode,
 							epsilon=epsilon,
-							# walk_speed=walk_speed,
+							walk_speed=walk_speed,
 	                    	primary_input=origin_filename,
 							primary_hints=matrix_origin_field_mapping,
 							secondary_input=destination_filename,
 							secondary_hints=matrix_destination_field_mapping)
 
 		transit_matrix.process()
-		transit_matrix_filename = generate_file_name(OUTPUTS_FOLDER, "travel_matrix", "h5")
-		transit_matrix.write_h5(transit_matrix_filename)
+		transit_matrix_filename = generate_file_name(OUTPUTS_FOLDER, "travel_matrix", "tmx")
+		transit_matrix.write_tmx(transit_matrix_filename)
 	
 	print("\naccess inputs")
 	print(travel_mode)
@@ -241,7 +244,7 @@ def run_health_code(access_measures_checkbox,
 	                    destinations_filename=destination_filename,
 	                    source_column_names=model_origin_field_mapping,
 	                    dest_column_names=model_destination_field_mapping,
-	                    sp_matrix_filename=transit_matrix_filename,
+	                    transit_matrix_filename=transit_matrix_filename,
 	                    decay_function=decay_function)
 		access_model.calculate(upper_threshold=maximum_travel_time, category_weight_dict=category_weight_dict)
 		access_file_name = generate_file_name(OUTPUTS_FOLDER, "access", "csv")
@@ -256,7 +259,7 @@ def run_health_code(access_measures_checkbox,
 	                    destinations_filename=destination_filename,
 	                    source_column_names=model_origin_field_mapping,
 	                    dest_column_names=model_destination_field_mapping,
-	                    sp_matrix_filename=transit_matrix_filename,
+	                    transit_matrix_filename=transit_matrix_filename,
 	                    categories=categories)
 		coverage_model.calculate(upper_threshold=maximum_travel_time)
 		coverage_file_name = generate_file_name(OUTPUTS_FOLDER, "coverage", "csv")

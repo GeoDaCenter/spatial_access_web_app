@@ -37,9 +37,10 @@ ehthumbs.db
 Thumbs.db
 *.icloud
 
-# Outputs and resources
+# Inputs, outputs and resources
 ######################
 data/*
-uploads/*
+inputs/*
+outputs/*
 exercise_code.py
 command_line_test.py
