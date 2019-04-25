@@ -126,7 +126,7 @@ def index():
 				category_weight_dict=category_weight_dict, 
 				categories=categories)
 			
-			return download_results(output_files)
+			return results(output_files)
 
 		else:
 			print(form.errors)
@@ -152,10 +152,10 @@ def return_file(filename):
 	else:
 		return send_file(filename, as_attachment=True)
 
-@app.route("/download-results/")
-def download_results(output_files):
+@app.route("/results/")
+def results(output_files):
 	flash(output_files)
-	return render_template("download_results.html")
+	return render_template("results.html")
 
 def generate_file_name(directory, keyword, extension="csv"):
 

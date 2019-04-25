@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block content %}
+	<main class="about-section">
+		<div class="container">
+			<h2>Processing finished!</h2>
+			<br>
+				
+			{% with messages = get_flashed_messages()[0] %}
+				<h3>Output filepaths:</h3>
+				<span>{{messages[0]}}</span>
+				{% if messages|length == 2 %}
+					<span>{{messages[1]}}</span>
+					
+				{% endif %}
+			{% endwith %}
+		</div>
+	</main>
+{% endblock %}
