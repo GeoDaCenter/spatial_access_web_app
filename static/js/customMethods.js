@@ -394,6 +394,15 @@ function setTestingDefaults2() {
 	$("#epsilonValueSliderId")[0].value = 0;
 }
 
+function setUpProcessingSpinner() {
+	$body = $("body");
+	console.log($body);
+	console.log($("#submit"));
+	$("#submit").click(function() { 
+		$body.addClass("loading");
+	});
+}
+
 window.onload = function() {
 	/* 
 	Once DOM is ready, modify HTML defaults and set up listeners
@@ -418,4 +427,5 @@ window.onload = function() {
 	handleDestinationCategoriesLabel();
 	handleInformationButtons();
 	setTestingDefaults2();
+	setUpProcessingSpinner();
 }
