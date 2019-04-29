@@ -40,22 +40,36 @@ def index():
 	if request.method == 'POST':
 
 		valid = True
-		category_weight_dict = {}
-
 		# parse custom_weight_dict
-		if form.custom_weight_dict.data.strip() != "":
+		category_weight_dict = {"Hospitals": [3,2,1], "Federally Qualified Health Centers": [3,2,1]}
+		weight_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+		category_weight_dict = {"Hospitals": weight_list, 
+			"Federally Qualified Health Centers": weight_list,
+			"All Free Health Clinics": weight_list,
+			"Other Health Providers": weight_list,
+			"School-Based Health Centers": weight_list}
+		category_weight_dict = None
+
+		if form.custom_weight_dict.data != "":
 			try:
-				custom_lists = form.custom_weight_dict.data.split(";")
-				for ls in custom_lists:
-					list_name, values_string = ls.split(":")
+				# If user has input more than just a single default list, it'll be separated by ;
+				if form.custom_weight_dict.data.find(";") != -1:
+					custom_lists = form.custom_weight_dict.data.split(";")
+					for ls in custom_lists:
+						list_name, values_string = ls.split(":")
+						values_list_string = values_string.split(",")
+						values_list = [float(value.strip()) for value in values_list_string]
+						category_weight_dict[list_name.strip()] = values_list
+				# If a user has just input a default list
+				else:
+					list_name, values_string = form.custom_weight_dict.data.split(":")
 					values_list_string = values_string.split(",")
-					values_list = [float(value.strip()) for value in values_list_string]
-					category_weight_dict[list_name.strip()] = values_list
-				
+					values_list = [float(value.strip()) for value in values_list_string]	
+					category_weight_dict["Default"] = values_list
 			except:
 				print("Error parsing custom weight dictionary")
 				valid = False
-		print("category_weight_dict:", category_weight_dict)
+
 		if form.validate():
 
 			# retrieve file names and upload data to the server
@@ -126,7 +140,7 @@ def index():
 				model_destination_field_mapping,
 				decay_function=form.decay_function.data,
 				epsilon=float(request.form["epsilonValueSlider"]),
-				walk_speed=float(request.form["walkSpeedSlider"]) * 1.6,
+				walk_speed=float(request.form["walkSpeedSlider"]),
 				category_weight_dict=category_weight_dict, 
 				categories=categories)
 			
@@ -190,40 +204,39 @@ def run_health_code(access_measures_checkbox,
 	transit_matrix_file = "/Users/georgeyoliver/Documents/GitHub/CSDS/GeoDaCenter/contracts/analytics/data/walk_full_results_3.csv"
 	output_files = []
 
-	print("\ntransit matrix inputs")
-	print("travel_mode", travel_mode)
-	print("origin_filename", origin_filename)
-	print("matrix_origin_field_mapping", matrix_origin_field_mapping)
-	print("destination_filename", destination_filename)
-	print("matrix_destination_field_mapping", matrix_destination_field_mapping)
-	print("walk_speed", walk_speed)
-	print("epsilon", epsilon)
+	print("transit matrix inputs")
+	print(travel_mode)
+	print(origin_filename)
+	print(matrix_origin_field_mapping)
+	print(destination_filename)
+	print(matrix_destination_field_mapping)
+	print(epsilon)
+	print(walk_speed)
 	
 	# Create a TransitMatrix if 
 	if create_transit_matrix:
 		transit_matrix = p2p.TransitMatrix(network_type=travel_mode,
-							primary_input=origin_filename,
+							epsilon=epsilon,
+							walk_speed=walk_speed,
+	                    	primary_input=origin_filename,
 							primary_hints=matrix_origin_field_mapping,
 							secondary_input=destination_filename,
-							secondary_hints=matrix_destination_field_mapping,
-							walk_speed=walk_speed,
-	                    	epsilon=epsilon)
+							secondary_hints=matrix_destination_field_mapping)
 
 		transit_matrix.process()
 		transit_matrix_filename = generate_file_name(OUTPUTS_FOLDER, "travel_matrix", "tmx")
 		transit_matrix.write_tmx(transit_matrix_filename)
 	
-	print("\nmodel inputs")
-	print("travel_mode", travel_mode)
-	print("origin_filename", origin_filename)
-	print("destination_filename", destination_filename)
-	print("model_origin_field_mapping", model_origin_field_mapping)
-	print("model_destination_field_mapping", model_destination_field_mapping)
-	print("transit_matrix_filename", transit_matrix_filename)
-	print("decay_function", decay_function)
-	print("maximum_travel_time", maximum_travel_time)
-	print("category_weight_dict", category_weight_dict)
-	print("categories", categories)
+	print("\naccess inputs")
+	print(travel_mode)
+	print(origin_filename)
+	print(destination_filename)
+	print(model_origin_field_mapping)
+	print(model_destination_field_mapping)
+	print(transit_matrix_filename)
+	print(decay_function)
+	print(maximum_travel_time)
+	print(category_weight_dict)
 
 	print(spatial_access.__file__)
 
@@ -232,12 +245,11 @@ def run_health_code(access_measures_checkbox,
 	if access_measures_checkbox:
 		access_model = Models.AccessModel(network_type=travel_mode,
 						sources_filename=origin_filename,
-	                    source_column_names=model_origin_field_mapping,
 	                    destinations_filename=destination_filename,
+	                    source_column_names=model_origin_field_mapping,
 	                    dest_column_names=model_destination_field_mapping,
 	                    transit_matrix_filename=transit_matrix_filename,
 	                    decay_function=decay_function)
-
 		access_model.calculate(upper_threshold=maximum_travel_time, category_weight_dict=category_weight_dict)
 		access_file_name = generate_file_name(OUTPUTS_FOLDER, "access", "csv")
 		access_model.model_results.to_csv(access_file_name)
@@ -248,12 +260,11 @@ def run_health_code(access_measures_checkbox,
 	if coverage_measures_checkbox:
 		coverage_model = Models.Coverage(network_type=travel_mode,
 	                    sources_filename=origin_filename,
-	                    source_column_names=model_origin_field_mapping,
 	                    destinations_filename=destination_filename,
+	                    source_column_names=model_origin_field_mapping,
 	                    dest_column_names=model_destination_field_mapping,
 	                    transit_matrix_filename=transit_matrix_filename,
 	                    categories=categories)
-		
 		coverage_model.calculate(upper_threshold=maximum_travel_time)
 		coverage_file_name = generate_file_name(OUTPUTS_FOLDER, "coverage", "csv")
 		coverage_model.model_results.to_csv(coverage_file_name)

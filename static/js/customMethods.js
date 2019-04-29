@@ -17,17 +17,16 @@ var infoTextEpsilonValue = 'The streets considered for routing between origins a
 
 var infoTitleFacilityWeights = "Custom facility weights";
 var infoTextFacilityWeights =  
-	'By default, all facilities of a given category value are given the same weight before applying ' +
-	'the distance decay weight set in the distance decay function parameter (categories are set in the destination file parameters below).  ' +
-	'<blockquote></blockquote>In some cases, it may be more appropriate to discount the value of each subsequent facility of the same category. ' +
-	'Does the second hospital near one\'s home contibute as much to a resident\'s hospital access as much as the first one?  This parameter is ' +
-	'used to provide a list of weights for discounting successive facilities of the specified categories.' +
-	'<blockquote>Hospitals: 1, 0.67, 0.33; Health Clinics: 1, 0.8, 0.6, 0.4, 0.2</blockquote><blockquote></blockquote>In the above ' +
-	'example, the closest facility with the category \'Hospital\' will be weighted with the value 1, while the 2<sup>nd</sup> closest ' +
-	'hospital will be given a weight of 0.67, etc.  The 4<sup>th</sup> and subsequent hospitals will be given a weight of 0.  Health clinics will be weighted using ' +
-	'the list 1, 0.8, 0.6, 0.4, 0.2.  Facilities with other category values will be weighted with the same weight before applying the distance decay weight.  ' +
-	'The same weight scale should be used for each category.'
-		
+	'<b>Format</b><br><br>' +
+	'List numeric weights separated by commas. If only <i>n</i> weight values are given, the <i>n</i> + 1<sup>st</sup>' +
+	' and subsequent facilities will be given a weight of 0. To apply a single weight list to all facilities, input values separated by commas. ' +
+	'In the below example, the 5<sup>th</sup> facility will be weighted with the value 0.2, while the 6<sup>th</sup> facility will be given a weight of zero.  ' +
+	'<blockquote>1, 0.8, 0.6, 0.4, 0.2</blockquote>' +
+	'To provide different weight lists for different facility categories: ' + 
+	'<blockquote>"Hospitals": 1, 0.5; "Health Clinics": 1, 0.67, 0.33; "Default": 1, 0.8, 0.6, 0.4, 0.2</blockquote>' +
+	'In the above example, the weight list "Default" will be applied to all facilities not of category "Hospitals" or "Health Clinics".  ' + 
+	'If no input is given, a weight list of 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 is used for all facilities.';
+
 var infoTitleOriginUniqueID = "Origin file unique ID field";
 var infoTitleDestinationUniqueID = "Destination file unique ID field";
 var infoTextUniqueID = 'The unique ID field data type must be integer.';

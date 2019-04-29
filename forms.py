@@ -57,7 +57,7 @@ class InputForm(FlaskForm):
 	# 	'is used.  If a dictionary is supplied, if it contains a "Default"&#013;'
 	# 	'list (as above), then the default weights are applied to any&#013;'
 	# 	'category not listed in the dictionary.')
-	custom_weight_dict = StringField("Custom facility weights<i class='material-icons infoButton' id='facilityWeightListInfoButton'>info</i>")
+	custom_weight_dict = StringField("Relative weight for the n<sup>th</sup> facility of the same category<i class='material-icons infoButton' id='facilityWeightListInfoButton'>info</i>")
 
 
 	origin_file = FileField('Origin file', [validators.DataRequired('Please specify an origin file.')])
