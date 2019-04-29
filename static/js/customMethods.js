@@ -39,8 +39,8 @@ function modifyDefaults() {
 	$("#origin_file").attr("type", "file");
 	$("#destination_file").attr("type", "file");
 	
-	$("#origin_population_field").parent().hide();
-	$("#destination_target_field").parent().hide();
+	// $("#origin_population_field").parent().hide();
+	// $("#destination_target_field").parent().hide();
 	
 	$("#origin_unique_id_field").attr("disabled", "disabled");
 	$("#origin_population_field").attr("disabled", "disabled");
@@ -421,7 +421,7 @@ window.onload = function() {
 	modifyDefaults();
 	handleFileInput("destination");
 	handleFileInput("origin");
-	handleAccessAndCoverageDifferences();
+	// handleAccessAndCoverageDifferences();
 	handleAdvancedSettingsDisplay();
 	handleDestinationCategoriesLabel();
 	handleInformationButtons();
