@@ -366,13 +366,13 @@ function setTestingDefaults(filename) {
 		
 	} else {
 		$("#origin_unique_id_field option[value='BLOCKID10']").prop('selected', true);
-		// $("#origin_population_field option[value='CE01_2014']").prop('selected', true);
+		$("#origin_population_field option[value='CE01_2014']").prop('selected', true);
 		$("#origin_latitude_field option[value='latitude']").prop('selected', true);
 		$("#origin_longitude_field option[value='longitude']").prop('selected', true);
 		
 		$("#destination_unique_id_field option[value='agency_id']").prop('selected', true);
 		$("#destination_target_field option[value='capacityValue']").prop('selected', true);
-		$("#destination_category_field option[value='DHHDSCategory']").prop('selected', true);
+		$("#destination_category_field option[value='DHHSCategory']").prop('selected', true);
 		$("#destination_latitude_field option[value='latitude']").prop('selected', true);
 		$("#destination_longitude_field option[value='longitude']").prop('selected', true);
 		
