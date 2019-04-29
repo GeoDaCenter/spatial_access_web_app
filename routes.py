@@ -68,15 +68,12 @@ def index():
 			
 			# create a dictionary associating field names used in the health code to the
 			# fields in the data specified by the user
+
 			matrix_origin_field_mapping = {
 			"idx": form.origin_unique_id_field.data,
 			"lat": form.origin_latitude_field.data,
 			"lon": form.origin_longitude_field.data}
 
-			destination_target_field = form.destination_target_field.data
-			if form.coverage_measures_checkbox.data is False:
-				destination_target_field = ""
-			
 			matrix_destination_field_mapping = {
 			"idx": form.destination_unique_id_field.data,
 			"lat": form.destination_latitude_field.data,
@@ -97,18 +94,25 @@ def index():
 			}
 			
 			if form.coverage_measures_checkbox.data is False:
-				model_origin_field_mapping["population"] = "skip";
-				model_destination_field_mapping["capacity"] = "skip";
+				dmodel_origin_field_mapping.pop("population", None)
+				model_destination_field_mapping.pop("capacity", None)
+
+			if form.destination_target_field.data == "":
+				model_destination_field_mapping["capacity"] = "skip"
+			if form.destination_category_field.data == "":
+				model_destination_field_mapping["category"] = "skip"
 
 			# update file paths to those on the server
 			origin_filename = os.path.join(INPUTS_FOLDER, origin_filename)
 			destination_filename = os.path.join(INPUTS_FOLDER, destination_filename)
 			categories = form.destination_categories.data
-			for x in form.destination_categories:
-				print(x)
 			maximum_travel_time = int(request.form["maximumTimeSlider"]) * 60
-			print("yaaas")
-			print(float(request.form["epsilonValueSlider"]))
+			
+			print("categories:", categories)
+			print("model_origin_field_mapping:", model_origin_field_mapping)
+			print("model_destination_field_mapping:", model_destination_field_mapping)
+			
+
 			# execute health code
 			output_files = run_health_code(form.access_measures_checkbox.data,
 				form.coverage_measures_checkbox.data,
