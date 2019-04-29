@@ -69,7 +69,7 @@ class InputForm(FlaskForm):
 	destination_unique_id_field = SelectFieldWithoutPreValidation("Unique id field<i class='material-icons infoButton' id='destinationUniqueIdFieldButton'>info</i>", choices=[])
 	destination_latitude_field = SelectFieldWithoutPreValidation("Latitude (y-coordinate) field", choices=[])
 	destination_longitude_field = SelectFieldWithoutPreValidation("Longitude (x-coordinate) field", choices=[])
-	destination_target_field = SelectFieldWithoutPreValidation("Target field (Optional)", choices=[])
+	destination_target_field = SelectFieldWithoutPreValidation("Target field", choices=[])
 	destination_category_field = SelectFieldWithoutPreValidation("Category field (Optional)", choices=[])
 	destination_categories = SelectMultipleFieldWithoutPreValidation("Choose categories to calculate measures for (Optional)", choices=[])
 	
