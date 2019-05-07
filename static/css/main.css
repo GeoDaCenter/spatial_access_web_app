@@ -28,8 +28,13 @@ select {
 }
 
 .container {
-  width: 1000px;
+  width: 400px;
   margin: 0 auto;
+  word-wrap : break-word;
+}
+
+.outputs span{
+  display: block;
 }
 
 .pull-left {
@@ -125,19 +130,19 @@ header {
 
 
 /*
- * Hero section 
+ * Main section 
  */
 
-.hero-section .section-content {
+.main-section .section-content {
   position: relative;
   top: 0px;
 }
 
-.hero-section .section-content h2 {
+.main-section h2 {
   font-size: 40px;
 }
 
-.hero-section .section-content .btn-primary {
+.main-section .section-content .btn-primary {
   margin-right: 10px;
 }
 
@@ -159,7 +164,7 @@ header {
   margin-bottom: 20px;
 }
 
-.form-group label {
+.form-group label, h3 {
   color: #3a3a3a;
   display: block;
   font-family: 'Open Sans', sans-serif;
@@ -199,15 +204,6 @@ header {
 /*
  * Input
  */ 
-
-.about-section h2 {
-  font-size: 30px;
-  margin-bottom: 0;
-}
-
-.about-section p {
-  font-size: 16px;
-}
 
 
 /* 
@@ -276,13 +272,13 @@ header {
   max-width: 200px;
 }
 
-.leaflet-popup-content h3 {
+/*.leaflet-popup-content h3 {
   margin: 0;
 }
 
 .leaflet-popup-content p {
   margin: 10px 0 ;
-}
+}*/
 
 label.inactive {
   color: lightgray;
