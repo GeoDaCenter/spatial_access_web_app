@@ -4,8 +4,10 @@ from customized_flask_classes import SelectFieldWithoutPreValidation, SelectMult
 
 access_checked = False
 coverage_checked = False
-ACCESS_MEASURES_LABEL = 'Access measures'
-COVERAGE_MEASURES_LABEL = 'Coverage measures'
+ACCESS_1_LABEL = 'Access Score, Access Count, Access Time'
+ACCESS_2_LABEL = 'Access Sum'
+ACCESS_3_LABEL = 'Two-Step Floating Catchment Area Score'
+COVERAGE_LABEL = 'Population Served, Per-Capita Spending'
 
 def validate_access_or_coverage_chosen(form, field):
 	
@@ -17,24 +19,23 @@ def validate_access_or_coverage_chosen(form, field):
 	global access_checked
 	global coverage_checked
 
-	if field.id == "access_measures_checkbox":
-		access_checked = field.data
+	if field.id in ("access_1_checkbox", "access_2_checkbox", "access_3_checkbox"):
+		access_checked = field.data or access_checked
 		return
-	if field.id == "coverage_measures_checkbox":
+	if field.id == "coverage_checkbox":
 		coverage_checked = field.data
-		print("access_measures_checkbox checked:", access_checked, "; coverage_measures_checkbox checked:", coverage_checked)
+		print("Access Measure checkbox checked:", access_checked, "; Coverage Measure checkbox checked:", coverage_checked)
 		if access_checked is False and coverage_checked is False:
-			raise ValidationError("Please check at least one of '" + ACCESS_MEASURES_LABEL + "' and '" + COVERAGE_MEASURES_LABEL + ".'")
+			raise ValidationError("Please check at least one of the Access or Coverage checkboxes.'")
 		else:
 			return
 	
 class InputForm(FlaskForm):
 	
-	global access_measures_label
-	global coverage_measures_label
-
-	access_measures_checkbox = BooleanField(ACCESS_MEASURES_LABEL, [validate_access_or_coverage_chosen])
-	coverage_measures_checkbox = BooleanField(COVERAGE_MEASURES_LABEL, [validate_access_or_coverage_chosen])
+	access_1_checkbox = BooleanField(ACCESS_1_LABEL, [validate_access_or_coverage_chosen])
+	access_2_checkbox = BooleanField(ACCESS_2_LABEL, [validate_access_or_coverage_chosen])
+	access_3_checkbox = BooleanField(ACCESS_3_LABEL, [validate_access_or_coverage_chosen])
+	coverage_checkbox = BooleanField(COVERAGE_LABEL, [validate_access_or_coverage_chosen])
 	travel_mode = SelectField('Travel mode',
 		choices=[('walk', 'Walk'),
 		('drive', 'Drive')])
@@ -74,6 +75,3 @@ class InputForm(FlaskForm):
 	destination_categories = SelectMultipleFieldWithoutPreValidation("Choose categories to calculate measures for (Optional)", choices=[])
 	
 	submit = SubmitField('Submit')
-
-
-

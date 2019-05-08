@@ -15,7 +15,7 @@ body {
 h2 {
   font-weight: 300;
   letter-spacing: -1.2px;
-  margin-top: 75px;
+  margin-top: 50px;
 }
 
 a {
@@ -25,6 +25,10 @@ a {
 
 select {
   min-width: 200px;
+}
+
+span {
+  font-size: 15px;
 }
 
 .container {
@@ -180,7 +184,7 @@ header {
   color: #3a3a3a;
   font-size: 18px;
   padding: 5px 0;
-  width: 100%;
+  /*width: 100%;*/
 }
 
 .form-group input:focus {
@@ -200,7 +204,20 @@ header {
   color: #db4437;
 }
 
+.inline-group input, .inline-group label {
+  display: inline-block;
+  margin-bottom: 0; /* I added this after I posted my reply */
+  vertical-align: middle; /* Fixes any weird issues in Firefox and IE */
+  font-weight: 400;
+}
 
+.inline-group .parenthetical span {
+  display: inline-block;
+}
+
+.checkbox-group {
+  margin-bottom: 10px;
+}
 /*
  * Input
  */ 
@@ -313,6 +330,7 @@ label.inactive {
 
 #advancedSettingsContainer {
   display: none;
+  margin-left: 30px;
 }
 
 #advancedSettingsLabel, epsilonValueSliderLabel {

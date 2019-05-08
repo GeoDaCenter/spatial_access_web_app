@@ -107,7 +107,7 @@ def index():
 			"category": form.destination_category_field.data
 			}
 			
-			if form.coverage_measures_checkbox.data is False:
+			if form.coverage_checkbox.data is False:
 				model_origin_field_mapping.pop("population", None)
 				model_destination_field_mapping.pop("capacity", None)
 
@@ -128,8 +128,10 @@ def index():
 			
 
 			# execute health code
-			output_files = run_health_code(form.access_measures_checkbox.data,
-				form.coverage_measures_checkbox.data,
+			output_files = run_health_code(form.access_1_checkbox.data,
+				form.access_2_checkbox.data,
+				form.access_3_checkbox.data,
+				form.coverage_checkbox.data,
 				form.travel_mode.data,
 				maximum_travel_time,
 				origin_filename, 
@@ -184,8 +186,10 @@ def generate_file_name(directory, keyword, extension="csv"):
 		counter += 1
 	return filename
 
-def run_health_code(access_measures_checkbox, 
-	coverage_measures_checkbox,
+def run_health_code(access_1_checkbox, 
+	access_2_checkbox, 
+	access_3_checkbox, 
+	coverage_checkbox,
 	travel_mode,
 	maximum_travel_time,
 	origin_filename,
@@ -240,9 +244,10 @@ def run_health_code(access_measures_checkbox,
 
 	print(spatial_access.__file__)
 
+	access_outputs = []
 	# If any of the access metrics' checkboxes were checked,
 	# create an AccessModel object and write output
-	if access_measures_checkbox:
+	if access_1_checkbox:
 		access_model = Models.AccessModel(network_type=travel_mode,
 						sources_filename=origin_filename,
 	                    destinations_filename=destination_filename,
@@ -253,16 +258,6 @@ def run_health_code(access_measures_checkbox,
 		access_model_df = access_model.calculate(upper_threshold=maximum_travel_time, 
 												category_weight_dict=category_weight_dict)
 		
-		tsfca_model = Models.TSFCA(network_type=travel_mode,
-						sources_filename=origin_filename,
-	                    source_column_names=model_origin_field_mapping,
-	                    destinations_filename=destination_filename,
-	                    dest_column_names=model_destination_field_mapping,
-	                    transit_matrix_filename=transit_matrix_filename,
-	                    categories=categories)
-
-		tsfca_model_df = tsfca_model.calculate(upper_threshold=maximum_travel_time)
-		
 		access_count = Models.AccessCount(network_type=travel_mode,
 						sources_filename=origin_filename,
 	                    source_column_names=model_origin_field_mapping,
@@ -271,15 +266,6 @@ def run_health_code(access_measures_checkbox,
 	                    transit_matrix_filename=transit_matrix_filename,
 	                    categories=categories)
 		access_count_df = access_count.calculate(upper_threshold=maximum_travel_time)
-
-		access_sum = Models.AccessSum(network_type=travel_mode,
-						sources_filename=origin_filename,
-	                    source_column_names=model_origin_field_mapping,
-	                    destinations_filename=destination_filename,
-	                    dest_column_names=model_destination_field_mapping,
-	                    transit_matrix_filename=transit_matrix_filename,
-	                    categories=categories)
-		access_sum_df = access_sum.calculate(upper_threshold=maximum_travel_time)
 
 		access_time = Models.AccessTime(network_type=travel_mode,
 						sources_filename=origin_filename,
@@ -290,16 +276,51 @@ def run_health_code(access_measures_checkbox,
 	                    categories=categories)
 		access_time_df = access_time.calculate()
 
-		access_model_df = access_model_df.join(tsfca_model_df).join(access_count_df).join(access_sum_df).join(access_time_df)
+		access_outputs.append(access_model_df)
+		access_outputs.append(access_count_df)
+		access_outputs.append(access_time_df)
 
+	if access_2_checkbox:
+		access_sum = Models.AccessSum(network_type=travel_mode,
+						sources_filename=origin_filename,
+	                    source_column_names=model_origin_field_mapping,
+	                    destinations_filename=destination_filename,
+	                    dest_column_names=model_destination_field_mapping,
+	                    transit_matrix_filename=transit_matrix_filename,
+	                    categories=categories)
+		access_sum_df = access_sum.calculate(upper_threshold=maximum_travel_time)
+
+		access_outputs.append(access_sum_df)
+
+	if access_3_checkbox:
+		tsfca_model = Models.TSFCA(network_type=travel_mode,
+						sources_filename=origin_filename,
+	                    source_column_names=model_origin_field_mapping,
+	                    destinations_filename=destination_filename,
+	                    dest_column_names=model_destination_field_mapping,
+	                    transit_matrix_filename=transit_matrix_filename,
+	                    categories=categories)
+
+		tsfca_model_df = tsfca_model.calculate(upper_threshold=maximum_travel_time)
+
+		access_outputs.append(tsfca_model_df)
+		
+	if access_1_checkbox or access_2_checkbox or access_3_checkbox:
+		print("len access outputs", len(access_outputs))
+		print(access_outputs)
+		access_df = access_outputs[0]
+		if len(access_outputs) > 1:
+			for i in range(1,len(access_outputs)):
+				access_df = access_df.join(access_outputs[i])
+		
 		access_file_name = generate_file_name(OUTPUTS_FOLDER, "access", "csv")
-		access_model_df.to_csv(access_file_name)
+		access_df.to_csv(access_file_name)
 		output_files.append(access_file_name)
 		
 
 	# If any of the coverage metrics' checkboxes were checked,
 	# create an AccessModel object and write output
-	if coverage_measures_checkbox:
+	if coverage_checkbox:
 		coverage_model = Models.Coverage(network_type=travel_mode,
 	                    sources_filename=origin_filename,
 	                    destinations_filename=destination_filename,

@@ -40,16 +40,35 @@
                     {{ form.hidden_tag() }}
 
                     <div class="form-group">
-                        {% if form.coverage_measures_checkbox.errors %}
-                            {% for error in form.coverage_measures_checkbox.errors %}
+                        {% if form.coverage_checkbox.errors %}
+                            {% for error in form.coverage_checkbox.errors %}
                                 <p class="error-message">{{ error }}</p>
                             {% endfor %}
                         {% endif %}
                     </div>
                     <div class="form-group">
-                    	{{ form.access_measures_checkbox.label }}
-                    	{{ form.access_measures_checkbox }}
-                        <div>
+                        <h3>Access Measures</h3>
+                        <div class="checkbox-group">
+                            <div class="inline-group">
+                            	{{ form.access_1_checkbox }}
+                                {{ form.access_1_checkbox.label }}
+                            </div>
+                        </div>
+                        <div class="checkbox-group">
+                            <div class="inline-group">
+                                {{ form.access_2_checkbox }}
+                                {{ form.access_2_checkbox.label }}
+                            </div>
+                            <span class="parenthetical">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(requires destination capacity column)</span>
+                        </div>
+                        <div class="checkbox-group">
+                            <div class="inline-group">
+                                {{ form.access_3_checkbox }}
+                                {{ form.access_3_checkbox.label }}
+                            </div>
+                            <span class="parenthetical">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(requires origin population and destination capacity columns)</span>
+                        </div>
+                        <!-- <div>
                             <ul>
                                 <li>HSSA score<i class='material-icons infoButton' id='HSSAScoreInfoButton'>info</i></li>
                                 <li>Two-step floating catchment area score</li>
@@ -57,17 +76,22 @@
                                 <li>Sum of accessible facilities' capacities</li>
                                 <li>Time to closest facility</li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="form-group">
-                        {{ form.coverage_measures_checkbox.label }}
-                        {{ form.coverage_measures_checkbox }}
-                        <div>
+                        <h3>Coverage Measures</h3>
+                        <div class="checkbox-group">
+                            <div class="inline-group">
+                                {{ form.coverage_checkbox }}
+                                {{ form.coverage_checkbox.label }}
+                            </div>
+                        </div>
+                        <!-- <div>
                             <ul>
                                 <li>Number of people within access space</li>
                                 <li>Per capita spending</li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="form-group">
                         {{ form.travel_mode.label }}
