@@ -103,16 +103,20 @@ def index():
 			"idx": form.destination_unique_id_field.data,
 			"lat": form.destination_latitude_field.data,
 			"lon": form.destination_longitude_field.data,
-			"capacity": form.destination_target_field.data,
+			"capacity": form.destination_capacity_field.data,
 			"category": form.destination_category_field.data
 			}
-			
-			if form.coverage_checkbox.data is False:
-				model_origin_field_mapping.pop("population", None)
-				model_destination_field_mapping.pop("capacity", None)
+		
+			coverage_checked = form.coverage_checkbox.data
+			access_2_checked = form.access_2_checkbox.data
+			access_3_checked = form.access_3_checkbox.data
 
-			if form.destination_target_field.data == "":
+			if not coverage_checked and not access_3_checked:
+				model_origin_field_mapping["population"] = "skip"
+
+			if not coverage_checked and not access_2_checked and not access_3_checked:
 				model_destination_field_mapping["capacity"] = "skip"
+
 			if form.destination_category_field.data == "":
 				model_destination_field_mapping["category"] = "skip"
 
@@ -208,7 +212,7 @@ def run_health_code(access_1_checkbox,
 	transit_matrix_file = "/Users/georgeyoliver/Documents/GitHub/CSDS/GeoDaCenter/contracts/analytics/data/walk_full_results_3.csv"
 	output_files = []
 
-	print("transit matrix inputs")
+	print("\n&&&& transit matrix inputs")
 	print(travel_mode)
 	print(origin_filename)
 	print(matrix_origin_field_mapping)
@@ -231,7 +235,7 @@ def run_health_code(access_1_checkbox,
 		transit_matrix_filename = generate_file_name(OUTPUTS_FOLDER, "travel_matrix", "tmx")
 		transit_matrix.write_tmx(transit_matrix_filename)
 	
-	print("\naccess inputs")
+	print("\n&&&& model inputs")
 	print(travel_mode)
 	print(origin_filename)
 	print(destination_filename)

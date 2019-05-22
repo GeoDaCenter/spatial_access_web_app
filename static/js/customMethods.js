@@ -39,8 +39,8 @@ function modifyDefaults() {
 	$("#origin_file").attr("type", "file");
 	$("#destination_file").attr("type", "file");
 	
-	// $("#origin_population_field").parent().hide();
-	// $("#destination_target_field").parent().hide();
+	$("#origin_population_field").parent().hide();
+	$("#destination_capacity_field").parent().hide();
 	
 	$("#origin_unique_id_field").attr("disabled", "disabled");
 	$("#origin_population_field").attr("disabled", "disabled");
@@ -49,7 +49,7 @@ function modifyDefaults() {
 	$("#destination_unique_id_field").attr("disabled", "disabled");
 	$("#destination_latitude_field").attr("disabled", "disabled");
 	$("#destination_longitude_field").attr("disabled", "disabled");
-	$("#destination_target_field").attr("disabled", "disabled");
+	$("#destination_capacity_field").attr("disabled", "disabled");
 	$("#destination_category_field").attr("disabled", "disabled");
 	$("#destination_categories").attr("disabled", "disabled");
 
@@ -165,10 +165,10 @@ function handleDestinationCategoriesLabel() {
 	$("#destination_category_field").change(function () {
 		if (this.value === "") {
 			$("label[for='destination_categories']").addClass("inactive");
-        } else {
-        	$("label[for='destination_categories']").removeClass("inactive");
-        }
-    });
+		} else {
+			$("label[for='destination_categories']").removeClass("inactive");
+		}
+	});
 }
 
 function readFileFields(originOrDestination, fileInputElement, fieldDropdownIdList) {
@@ -195,8 +195,8 @@ function readFileFields(originOrDestination, fileInputElement, fieldDropdownIdLi
 			window.inputFileLines = text.split(/\r|\n|\r\n|\n\r/);
 			var firstLine = inputFileLines.shift(); 
 			var fields = firstLine.split(",");
-    		
-    		// Loop through drop-down menus
+			
+			// Loop through drop-down menus
 			for (var i = 0; i < fieldDropdownIdList.length; i++) {
 				$("#" + fieldDropdownIdList[i]).removeAttr("disabled");
 				populateDropdownOptions($("#" + fieldDropdownIdList[i]), fields);
@@ -221,40 +221,60 @@ function readFileFields(originOrDestination, fileInputElement, fieldDropdownIdLi
 
 function handleAccessAndCoverageDifferences() {
 
-	/*
-	This function updates the interface according to what measure(s) the user has chosen to calculate. 
-	*/
+	/* This function updates the interface according to what measure(s) the user has chosen to calculate.*/
 
 	$(document).ready(function() {
-	    	
+			
 		// Handle when there is a change in coverage measures selection
-	    $("#coverage_measures_checkbox").click(function(){
-	        
-	        // If at least one coverage metric is selected, show the population field
-	        if ($("#coverage_measures_checkbox").is(':checked')) {
-	        	
-	        	$("#origin_population_field").parent().slideDown();
-	        	$("#destination_target_field").parent().slideDown();
-        		
-	        	// If the user has already chosen an origin file, populate the population dropdown with the origin file's field names.
-	        	if ($("#origin_file").val() !== "") {
-	        		var originFileField = document.getElementById("origin_file");
-	        		readFileFields("origin", originFileField, window.originFieldIds);
-	        	}
+		$("#coverage_checkbox").click(function(){
+			var coverageIsChecked = $("#coverage_checkbox").is(':checked');
+			handlePopulationFieldVisibility(coverageIsChecked);
+			handleCapacityFieldVisibility(coverageIsChecked);
+		});
 
-	        	// If the user has already chosen a destination file, populate the target dropdown with the origin file's field names.
-	        	if ($("#destination_file").val() !== "") {
-	        		var destinationFileField = document.getElementById("destination_file");
-	        		readFileFields("destination", destinationFileField, window.destinationFieldIds);
-	        	}
-        	
-        	// If no coverage measure is selected, hide the population field
-	        } else {
-	        	$("#origin_population_field").parent().slideUp();
-	        	$("#destination_target_field").parent().slideUp();
-	        }
-	    });
+		$("#access_2_checkbox").click(function(){
+			var access2IsChecked = $("#access_2_checkbox").is(':checked');
+			handleCapacityFieldVisibility(access2IsChecked);
+		});
+
+		$("#access_3_checkbox").click(function(){
+			var access3IsChecked = $("#access_3_checkbox").is(':checked');
+			handlePopulationFieldVisibility(access3IsChecked);
+			handleCapacityFieldVisibility(access3IsChecked);
+		});
 	});	
+}
+
+function handlePopulationFieldVisibility(show) {
+
+	if (show) {
+		$("#origin_population_field").parent().slideDown();
+		// If the user has already chosen a destination file, populate the capacity dropdown with the origin file's field names.
+		if ($("#origin_file").val() !== "") {
+			// var destinationFileField = document.getElementById("destination_file");
+			readFileFields("origin", $("#origin_file"), window.originFieldIds);
+		}
+	} else {
+		if (!$("#coverage_checkbox").is(':checked') && !$("#access_3_checkbox").is(':checked')) {
+			$("#origin_population_field").parent().slideUp();
+		}
+	}
+}
+
+function handleCapacityFieldVisibility(show) {
+
+	if (show) {
+		$("#destination_capacity_field").parent().slideDown();
+		// If the user has already chosen a destination file, populate the capacity dropdown with the origin file's field names.
+		if ($("#destination_file").val() !== "") {
+			// var destinationFileField = document.getElementById("destination_file");
+			readFileFields("destination", $("#destination_file"), window.destinationFieldIds);
+		}
+	} else {
+		if (!$("#coverage_checkbox").is(':checked') && !$("#access_2_checkbox").is(':checked') && !$("#access_3_checkbox").is(':checked')) {
+			$("#destination_capacity_field").parent().slideUp();
+		}
+	}
 }
 
 function handleAdvancedSettingsDisplay() {
@@ -275,14 +295,14 @@ function populateDropdownOptions(dropdownElement, optionList) {
 		$("#destination_category_field").append($('<option></option>').val("").html("(no field selected)"));
 	}
 	
-	if (dropdownElement[0].id === "destination_target_field") {
-		$("#destination_target_field").append($('<option></option>').val("").html("(no field selected)"));
+	if (dropdownElement[0].id === "destination_capacity_field") {
+		$("#destination_capacity_field").append($('<option></option>').val("").html("(no field selected)"));
 	}
 
 	for (var i = 0; i < optionList.length; i++) {
 		var optionValue = optionList[i].trim();
 		if (optionValue !== "") {
-    		
+			
 			dropdownElement.append($('<option></option>').val(optionValue).html(optionValue));
 		}
 	}
@@ -291,7 +311,7 @@ function populateDropdownOptions(dropdownElement, optionList) {
 function getDestinationCategoryOptions() {
 	var values = [];
 	$("#destination_categories").each(function() { 
-	    values.push( $(this).attr('value') );
+		values.push( $(this).attr('value') );
 	});	
 	return values;
 }
@@ -302,43 +322,43 @@ function handleInformationButtons() {
 	var dialogText = "";
 
 	$("#dialog").dialog({
-       autoOpen: false,
-       width: "40%",
-       minWidth: 350,
-       maxWidth: 500
-    });
-    
-    $(".infoButton").click(function() {
-    	switch (event.target.id) {
-    		case "decayFunctionInfoButton":
-    			dialogTitle = window.infoTitleDistanceDecayFunction;
-    			dialogText = window.infoTextDistanceDecayFunction;
-    			break;
-    		case "facilityWeightListInfoButton":
-    			dialogTitle = window.infoTitleFacilityWeights;
-    			dialogText = window.infoTextFacilityWeights;
-    			break;
-    		case "epsilonValueSliderInfoButton":
-    			dialogTitle = window.infoTitleEpsilonValue;
-    			dialogText = window.infoTextEpsilonValue;
-    			break;
-    		case "HSSAScoreInfoButton": 
-    			dialogTitle = window.infoTitleHSSAScore;
-    			dialogText = window.infoTextHSSAScore;
-    			break;
-    		case "originUniqueIdFieldButton":
-    			dialogTitle = window.infoTitleOriginUniqueID;
-    			dialogText = window.infoTextUniqueID;
-    			break;
-    		case "destinationUniqueIdFieldButton":
-    			dialogTitle = window.infoTitleDestinationUniqueID;
-    			dialogText = window.infoTextUniqueID;
-    			break;
-    	}
-    	$("#dialog p").html(dialogText);
-    	$("#dialog").dialog({title: dialogTitle});
-    	$("#dialog").dialog("open");
-    });
+	   autoOpen: false,
+	   width: "40%",
+	   minWidth: 350,
+	   maxWidth: 500
+	});
+	
+	$(".infoButton").click(function() {
+		switch (event.target.id) {
+			case "decayFunctionInfoButton":
+				dialogTitle = window.infoTitleDistanceDecayFunction;
+				dialogText = window.infoTextDistanceDecayFunction;
+				break;
+			case "facilityWeightListInfoButton":
+				dialogTitle = window.infoTitleFacilityWeights;
+				dialogText = window.infoTextFacilityWeights;
+				break;
+			case "epsilonValueSliderInfoButton":
+				dialogTitle = window.infoTitleEpsilonValue;
+				dialogText = window.infoTextEpsilonValue;
+				break;
+			case "HSSAScoreInfoButton": 
+				dialogTitle = window.infoTitleHSSAScore;
+				dialogText = window.infoTextHSSAScore;
+				break;
+			case "originUniqueIdFieldButton":
+				dialogTitle = window.infoTitleOriginUniqueID;
+				dialogText = window.infoTextUniqueID;
+				break;
+			case "destinationUniqueIdFieldButton":
+				dialogTitle = window.infoTitleDestinationUniqueID;
+				dialogText = window.infoTextUniqueID;
+				break;
+		}
+		$("#dialog p").html(dialogText);
+		$("#dialog").dialog({title: dialogTitle});
+		$("#dialog").dialog("open");
+	});
 }
 
 function setTestingDefaults(filename) {
@@ -349,7 +369,7 @@ function setTestingDefaults(filename) {
 		$("#origin_latitude_field option[value='lat']").prop('selected', true);
 		$("#origin_longitude_field option[value='lon']").prop('selected', true);	
 		$("#destination_unique_id_field option[value='ID']").prop('selected', true);
-		$("#destination_target_field option[value='target']").prop('selected', true);
+		$("#destination_capacity_field option[value='capacity']").prop('selected', true);
 		$("#destination_category_field option[value='category']").prop('selected', true);
 		$("#destination_latitude_field option[value='lat']").prop('selected', true);
 		$("#destination_longitude_field option[value='lon']").prop('selected', true);
@@ -359,7 +379,7 @@ function setTestingDefaults(filename) {
 		$("#origin_latitude_field option[value='lat']").prop('selected', true);
 		$("#origin_longitude_field option[value='lon']").prop('selected', true);
 		$("#destination_unique_id_field option[value='ID']").prop('selected', true);
-		$("#destination_target_field option[value='target']").prop('selected', true);
+		$("#destination_capacity_field option[value='capacity']").prop('selected', true);
 		$("#destination_latitude_field option[value='lat']").prop('selected', true);
 		$("#destination_longitude_field option[value='lon']").prop('selected', true);
 		// $("#destination_category_field option[value='category']").prop('selected', true);
@@ -371,7 +391,7 @@ function setTestingDefaults(filename) {
 		$("#origin_longitude_field option[value='longitude']").prop('selected', true);
 		
 		$("#destination_unique_id_field option[value='agency_id']").prop('selected', true);
-		$("#destination_target_field option[value='capacityValue']").prop('selected', true);
+		$("#destination_capacity_field option[value='capacityValue']").prop('selected', true);
 		$("#destination_category_field option[value='DHHSCategory']").prop('selected', true);
 		$("#destination_latitude_field option[value='latitude']").prop('selected', true);
 		$("#destination_longitude_field option[value='longitude']").prop('selected', true);
@@ -382,7 +402,7 @@ function setTestingDefaults(filename) {
 function setTestingDefaultsDestination(filename) {
 	if (filename.substring(0, 5) === "super") {
 		$("#destination_unique_id_field option[value='ID']").prop('selected', true);
-		$("#destination_target_field option[value='target']").prop('selected', true);
+		$("#destination_capacity_field option[value='capacity']").prop('selected', true);
 		$("#destination_latitude_field option[value='lat']").prop('selected', true);
 		$("#destination_longitude_field option[value='lon']").prop('selected', true);
 		// $("#destination_category_field option[value='category']").prop('selected', true);
@@ -409,19 +429,19 @@ window.onload = function() {
 
 	// Initialize global variables 
 	originFieldIds = ["origin_unique_id_field",
-        		"origin_latitude_field",
-        		"origin_longitude_field",
-        		"origin_population_field"];
-    destinationFieldIds = ["destination_unique_id_field",
-        		"destination_latitude_field",
-        		"destination_longitude_field",
-        		"destination_target_field",
-        		"destination_category_field"];
+				"origin_latitude_field",
+				"origin_longitude_field",
+				"origin_population_field"];
+	destinationFieldIds = ["destination_unique_id_field",
+				"destination_latitude_field",
+				"destination_longitude_field",
+				"destination_capacity_field",
+				"destination_category_field"];
 	
 	modifyDefaults();
 	handleFileInput("destination");
 	handleFileInput("origin");
-	// handleAccessAndCoverageDifferences();
+	handleAccessAndCoverageDifferences();
 	handleAdvancedSettingsDisplay();
 	handleDestinationCategoriesLabel();
 	handleInformationButtons();

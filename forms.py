@@ -62,7 +62,7 @@ class InputForm(FlaskForm):
 
 
 	origin_file = FileField('Origin file', [validators.DataRequired('Please specify an origin file.')])
-	origin_unique_id_field = SelectFieldWithoutPreValidation("Unique id field<i class='material-icons infoButton' id='originUniqueIdFieldButton'>info</i>", choices=[])
+	origin_unique_id_field = SelectFieldWithoutPreValidation("Unique ID field<i class='material-icons infoButton' id='originUniqueIdFieldButton'>info</i>", choices=[])
 	origin_latitude_field = SelectFieldWithoutPreValidation("Latitude (y-coordinate) field", choices=[])
 	origin_longitude_field = SelectFieldWithoutPreValidation("Longitude (x-coordinate) field", choices=[])
 	origin_population_field = SelectFieldWithoutPreValidation("Population field", choices=[])
@@ -70,7 +70,7 @@ class InputForm(FlaskForm):
 	destination_unique_id_field = SelectFieldWithoutPreValidation("Unique id field<i class='material-icons infoButton' id='destinationUniqueIdFieldButton'>info</i>", choices=[])
 	destination_latitude_field = SelectFieldWithoutPreValidation("Latitude (y-coordinate) field", choices=[])
 	destination_longitude_field = SelectFieldWithoutPreValidation("Longitude (x-coordinate) field", choices=[])
-	destination_target_field = SelectFieldWithoutPreValidation("Target field", choices=[])
+	destination_capacity_field = SelectFieldWithoutPreValidation("Capacity field", choices=[])
 	destination_category_field = SelectFieldWithoutPreValidation("Category field (Optional)", choices=[])
 	destination_categories = SelectMultipleFieldWithoutPreValidation("Choose categories to calculate measures for (Optional)", choices=[])
 	
