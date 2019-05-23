@@ -38,6 +38,8 @@ class InputForm(FlaskForm):
 	coverage_checkbox = BooleanField(COVERAGE_LABEL, [validate_access_or_coverage_chosen])
 	travel_mode = SelectField('Travel mode',
 		choices=[('walk', 'Walk'),
+		# ('otp', 'Transit'),
+		('bike', 'Bike'),
 		('drive', 'Drive')])
 
 	# Advanced settings

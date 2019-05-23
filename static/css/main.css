@@ -136,6 +136,9 @@ header {
 /*
  * Main section 
  */
+.main-section {
+  padding-bottom: 50px;
+}
 
 .main-section .section-content {
   position: relative;

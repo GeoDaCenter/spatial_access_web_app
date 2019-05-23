@@ -14,8 +14,7 @@ parentdir = os.path.dirname(currentdir)
 community_analytics_dir = os.path.join(parentdir, "analytics")
 sys.path.insert(0, community_analytics_dir) 
 
-from spatial_access import p2p, Models
-import spatial_access
+from spatial_access import p2p, Models, Configs
 
 app = Flask(__name__)
 
@@ -218,13 +217,16 @@ def analyze(options):
 	
 	# Create a TransitMatrix if 
 	if create_transit_matrix:
+		
+		configs = Configs.Configs(walk_speed=options["walk_speed"],
+					epsilon=options["epsilon"])
+		
 		transit_matrix = p2p.TransitMatrix(network_type=options["travel_mode"],
-							epsilon=options["epsilon"],
-							walk_speed=options["walk_speed"],
 							primary_input=options["origin_filename"],
 							primary_hints=options["matrix_origin_field_mapping"],
 							secondary_input=options["destination_filename"],
-							secondary_hints=options["matrix_destination_field_mapping"])
+							secondary_hints=options["matrix_destination_field_mapping"],
+							configs=configs)
 
 		transit_matrix.process()
 		transit_matrix_filename = generate_file_name(OUTPUTS_FOLDER, "travel_matrix", "tmx")
@@ -240,8 +242,7 @@ def analyze(options):
 	print(options["decay_function"])
 	print(options["maximum_travel_time"])
 	print(options["category_weight_dict"])
-	print(spatial_access.__file__)
-
+	
 	access_outputs = []
 	# If any of the access metrics' checkboxes were checked,
 	# create an AccessModel object and write output
