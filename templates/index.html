@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
@@ -14,12 +13,6 @@
           integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
           crossorigin="anonymous"></script>
     <script src="static/js/customMethods.js"></script>
-
-<!--     base black-tie blitzer cupertino dark-hive dot-luv eggplant excite-bike flick hot-sneaks humanity le-frog mint-choc overcast pepper-grinder redmond smoothness south-street start sunny swanky-purse trontastic ui-darkness ui-lightness vader -->
-</head>
-<body>
- 
-
 </head>
 
 <body>
@@ -68,15 +61,6 @@
                             </div>
                             <span class="parenthetical">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(requires origin population and destination capacity columns)</span>
                         </div>
-                        <!-- <div>
-                            <ul>
-                                <li>HSSA score<i class='material-icons md-18 infoButton' id='HSSAScoreInfoButton'>info</i></li>
-                                <li>Two-step floating catchment area score</li>
-                                <li>Accessible facility count</li>
-                                <li>Sum of accessible facilities' capacities</li>
-                                <li>Time to closest facility</li>
-                            </ul>
-                        </div> -->
                     </div>
                     <div class="form-group">
                         <h3>Coverage Measures</h3>
@@ -86,12 +70,6 @@
                                 {{ form.coverage_checkbox.label }}
                             </div>
                         </div>
-                        <!-- <div>
-                            <ul>
-                                <li>Number of people within access space</li>
-                                <li>Per capita spending</li>
-                            </ul>
-                        </div> -->
                     </div>
                     <div class="form-group">
                         {{ form.travel_mode.label }}
@@ -224,7 +202,5 @@
             <div class="clearfix"></div>
         </div>
     </main>
-
 </body>
-
 </html>

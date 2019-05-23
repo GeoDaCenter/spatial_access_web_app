@@ -49,19 +49,7 @@ class InputForm(FlaskForm):
 		('root', 'Inverse square root'),
 		('logit', 'Logit')])
 
-	# epsilon_value = 
-	# facilityWeightListInfoText = ('List numeric weights separated by commas.&#013;'
-	# 	'If only n weight values are given, the n + 1st and &#013;'
-	# 	'subsequent facilities will be given a weight of 0.&#013;&#013;'
-	# 	'Weights can be entered with one of two formats:&#013;'
-	# 	'&#009;1 (list format):  [1, 0.8, 0.6, 0.4, 0.2]&#013;'
-	# 	'&#009;2 (dictionary format):  {"Hospitals": [1, 0.5], "All Free Health Clinics": [1, 0.67, 0.33], "Default": [1, 0.8, 0.6, 0.4, 0.2]}&#013;&#013;'
-	# 	'If no input is given, a default weights list of [1,1,1,1,1,1,1,1,1,1]&#013;'
-	# 	'is used.  If a dictionary is supplied, if it contains a "Default"&#013;'
-	# 	'list (as above), then the default weights are applied to any&#013;'
-	# 	'category not listed in the dictionary.')
 	custom_weight_dict = StringField("Relative weight for the n<sup>th</sup> facility of the same category <i class='material-icons md-18 infoButton' id='facilityWeightListInfoButton' title='Click to view info text'>info</i>")
-
 
 	origin_file = FileField('Origin file', [validators.DataRequired('Please specify an origin file.')])
 	origin_unique_id_field = SelectFieldWithoutPreValidation("Unique ID field <i class='material-icons  md-18 infoButton' id='originUniqueIdFieldButton' title='Click to view info text'>info</i>", choices=[])

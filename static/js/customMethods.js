@@ -3,6 +3,7 @@ var originFieldIds;
 var destinationFieldIds;
 var inputFileLines;	
 
+/* Info button text. Info buttons are little 'i' icons next to certain inputs that need explanation */
 var infoTitleHSSAScore = "HSSA Score";
 var infoTextHSSAScore = 'Stands for blah blah blah blah.';
 
@@ -29,10 +30,10 @@ var infoTextFacilityWeights =
 
 var infoTitleOriginUniqueID = "Origin file unique ID field";
 var infoTitleDestinationUniqueID = "Destination file unique ID field";
-var infoTextUniqueID = 'The unique ID field data type must be integer.';
+var infoTextUniqueID = 'Only alphanumeric values are supported.';
 
 /*
-Modifies html defaults
+Modifies html defaults -- hiding/disabling various inputs
 */
 function modifyDefaults() {
 	
@@ -65,7 +66,7 @@ function modifyDefaults() {
 	$("label[for='destination_categories']").addClass("inactive");
 
 	// Add placeholder text
-	$("#custom_weight_dict").attr("placeholder", "1, 0.8. 0.6, 0.4, 0.2");
+	$("#custom_weight_dict").attr("placeholder", "Hospitals: 1, 0.5; Clinics: 1, 0.67, 0.33");
 
 }
 
@@ -202,14 +203,14 @@ function readFileFields(originOrDestination, fileInputElement, fieldDropdownIdLi
 				populateDropdownOptions($("#" + fieldDropdownIdList[i]), fields);
 			}
 			
-			setTestingDefaults(file.name);
+			// setTestingDefaults(file.name);
 			
 			// If the destination file has been set, populate the MultipleSelect field of destination categories
 			if (originOrDestination === "destination") {
 				var destinationFileField = document.getElementById("destination_file"); 
 				var destinationCategoryField = document.getElementById("destination_category_field"); 
 				populateDestinationCategories(destinationFileField, destinationCategoryField);
-				setTestingDefaultsDestination(file.name);
+				// setTestingDefaultsDestination(file.name);
 			}
 
 
@@ -247,6 +248,8 @@ function handleAccessAndCoverageDifferences() {
 
 function handlePopulationFieldVisibility(show) {
 
+	/* Displays the population field for the access/coverage measures that require it as an input*/
+
 	if (show) {
 		$("#origin_population_field").parent().slideDown();
 		// If the user has already chosen a destination file, populate the capacity dropdown with the origin file's field names.
@@ -263,6 +266,8 @@ function handlePopulationFieldVisibility(show) {
 
 function handleCapacityFieldVisibility(show) {
 
+	/* Displays the capacity field for the access/coverage measures that require it as an input*/
+
 	if (show) {
 		$("#destination_capacity_field").parent().slideDown();
 		// If the user has already chosen a destination file, populate the capacity dropdown with the origin file's field names.
@@ -278,6 +283,9 @@ function handleCapacityFieldVisibility(show) {
 }
 
 function handleAdvancedSettingsDisplay() {
+
+	/* set up toggling of visibility of advanced settings container */
+
 	$("#advancedSettingsButton").click(function() {
 		$("#advancedSettingsContainer").slideToggle();
 	});
@@ -308,15 +316,20 @@ function populateDropdownOptions(dropdownElement, optionList) {
 	}
 }
 
-function getDestinationCategoryOptions() {
-	var values = [];
-	$("#destination_categories").each(function() { 
-		values.push( $(this).attr('value') );
-	});	
-	return values;
-}
+// function getDestinationCategoryOptions() {
+
+// 	/* */
+// 	var values = [];
+// 	$("#destination_categories").each(function() { 
+// 		values.push( $(this).attr('value') );
+// 	});	
+// 	return values;
+// }
 
 function handleInformationButtons() {
+
+	/* Add the text that displays for the information buttons that appear next to various inputs*/
+
 	console.log("handleInformationButtons")
 	var dialogTitle = "";
 	var dialogText = "";
@@ -343,10 +356,6 @@ function handleInformationButtons() {
 				dialogTitle = window.infoTitleEpsilonValue;
 				dialogText = window.infoTextEpsilonValue;
 				break;
-			case "HSSAScoreInfoButton": 
-				dialogTitle = window.infoTitleHSSAScore;
-				dialogText = window.infoTextHSSAScore;
-				break;
 			case "originUniqueIdFieldButton":
 				dialogTitle = window.infoTitleOriginUniqueID;
 				dialogText = window.infoTextUniqueID;
@@ -363,6 +372,8 @@ function handleInformationButtons() {
 }
 
 function setTestingDefaults(filename) {
+
+	/* Used to automatically set inputs to test files fields */
 
 	if (filename === "blocks_chicago.csv") {
 		$("#origin_unique_id_field option[value='geoid10']").prop('selected', true);
@@ -392,8 +403,8 @@ function setTestingDefaults(filename) {
 		$("#origin_longitude_field option[value='longitude']").prop('selected', true);
 		
 		$("#destination_unique_id_field option[value='agency_id']").prop('selected', true);
-		$("#destination_capacity_field option[value='capacityValue']").prop('selected', true);
-		$("#destination_category_field option[value='DHHSCategory']").prop('selected', true);
+		$("#destination_capacity_field option[value='Funding']").prop('selected', true);
+		$("#destination_category_field option[value='ProviderCategory']").prop('selected', true);
 		$("#destination_latitude_field option[value='latitude']").prop('selected', true);
 		$("#destination_longitude_field option[value='longitude']").prop('selected', true);
 		
@@ -401,23 +412,30 @@ function setTestingDefaults(filename) {
 }
 
 function setTestingDefaultsDestination(filename) {
+
+	/* Used to automatically set inputs to test files fields */
+
 	if (filename.substring(0, 5) === "super") {
 		$("#destination_unique_id_field option[value='ID']").prop('selected', true);
-		$("#destination_capacity_field option[value='capacity']").prop('selected', true);
+		$("#destination_capacity_field option[value='Funding']").prop('selected', true);
 		$("#destination_latitude_field option[value='lat']").prop('selected', true);
 		$("#destination_longitude_field option[value='lon']").prop('selected', true);
-		// $("#destination_category_field option[value='category']").prop('selected', true);
+		$("#destination_category_field option[value='ProviderCategory']").prop('selected', true);
 	}
 }
 	
 function setTestingDefaults2() {
+
+	/* Used to automatically set inputs to test files fields */
+
 	$("#epsilonValueSliderId")[0].value = 0;
 }
 
 function setUpProcessingSpinner() {
+
+	/* Sets up spinner that displays when spatial_access code is running/data is processing */
+
 	$body = $("body");
-	console.log($body);
-	console.log($("#submit"));
 	$("#submit").click(function() { 
 		$body.addClass("loading");
 	});
@@ -446,6 +464,6 @@ window.onload = function() {
 	handleAdvancedSettingsDisplay();
 	handleDestinationCategoriesLabel();
 	handleInformationButtons();
-	setTestingDefaults2();
+	// setTestingDefaults2();
 	setUpProcessingSpinner();
 }

@@ -18,10 +18,7 @@ from spatial_access import p2p, Models, Configs
 
 app = Flask(__name__)
 
-# to handle csrf 
 app.secret_key = "development-key"
-# app.config["UPLOAD_FOLDER"] = config('upload_folder')
-# app.config["DATA_FOLDER"] = config('data_folder')
 INPUTS_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), "inputs")
 OUTPUTS_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), "outputs")
 if not os.path.exists(INPUTS_FOLDER):
@@ -37,14 +34,6 @@ def index():
 	if request.method == 'POST':
 
 		valid = True
-		# Test weight dicts
-		# category_weight_dict = {"Hospitals": [3,2,1], "Federally Qualified Health Centers": [3,2,1]}
-		# weight_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-		# category_weight_dict = {"Hospitals": weight_list, 
-		# 	"Federally Qualified Health Centers": weight_list,
-		# 	"All Free Health Clinics": weight_list,
-		# 	"Other Health Providers": weight_list,
-		# 	"School-Based Health Centers": weight_list}
 		category_weight_dict = None
 
 		if form.validate():
@@ -70,10 +59,10 @@ def index():
 			print("index GET didn't validate")
 			return render_template('about.html', form=form)
 
-# @app.route('/data/<filename>')
 @app.route("/return-file/<path:filename>")
 def return_file(filename):
-	print(flask.root_path)
+
+	# Legacy route used to enable download of the outputs
 	if filename.startswith('app'):  # Flask is stripping of the leading slash
 		filename = '/' + filename
 	if (not (filename.startswith(OUTPUTS_FOLDER) and filename.endswith('.csv'))) or '..' in filename:
@@ -95,7 +84,13 @@ def generate_file_name(directory, keyword, extension="csv"):
 		counter += 1
 	return filename
 
-def parse_custom_weight_dict(input_string):
+def parse_custom_weight_dict(form):
+
+	"""
+	Parse user supplied custom weights for categories of data in the destination input file
+	"""
+
+	category_weight_dict = {}
 
 	try:
 		# If user has input more than just a single default list, it'll be separated by ;
@@ -106,13 +101,14 @@ def parse_custom_weight_dict(input_string):
 				values_list_string = values_string.split(",")
 				values_list = [float(value.strip()) for value in values_list_string]
 				category_weight_dict[list_name.strip()] = values_list
+			
 		# If a user has just input a default list
 		else:
 			list_name, values_string = form.custom_weight_dict.data.split(":")
 			values_list_string = values_string.split(",")
 			values_list = [float(value.strip()) for value in values_list_string]	
-			category_weight_dict["Default"] = values_list
-
+			category_weight_dict[list_name] = values_list
+			
 		return category_weight_dict
 
 	except:
@@ -121,6 +117,9 @@ def parse_custom_weight_dict(input_string):
 
 def collect_options(form, request):
 
+	"""
+	Create a dictionary of inputs to pass to analyze()
+	"""
 	options = {}
 
 	# retrieve file names and upload data to the server
@@ -190,7 +189,7 @@ def collect_options(form, request):
 
 	# Parse custom weight dict
 	if form.custom_weight_dict.data != "":
-		options["category_weight_dict"] = parse_custom_weight_dict(form.custom_weight_dict.data)
+		options["category_weight_dict"] = parse_custom_weight_dict(form)
 	else:
 		options["category_weight_dict"] = {}
 	
@@ -202,18 +201,22 @@ def collect_options(form, request):
 
 def analyze(options):
 
+	"""
+	Runs spatial_access module code
+	"""
+
 	create_transit_matrix = True
 	transit_matrix_file = "/Users/georgeyoliver/Documents/GitHub/CSDS/GeoDaCenter/contracts/analytics/data/walk_full_results_3.csv"
 	output_files = []
 
 	print("\n&&&& transit matrix inputs")
-	print(options["travel_mode"])
-	print(options["origin_filename"])
-	print(options["matrix_origin_field_mapping"])
-	print(options["destination_filename"])
-	print(options["matrix_destination_field_mapping"])
-	print(options["epsilon"])
-	print(options["walk_speed"])
+	print("travel_mode", options["travel_mode"])
+	print("origin_filename", options["origin_filename"])
+	print("matrix_origin_field_mapping", options["matrix_origin_field_mapping"])
+	print("destination_filename", options["destination_filename"])
+	print("matrix_destination_field_mapping", options["matrix_destination_field_mapping"])
+	print("epsilon", options["epsilon"])
+	print("walk_speed", options["walk_speed"])
 	
 	# Create a TransitMatrix if 
 	if create_transit_matrix:
@@ -233,15 +236,16 @@ def analyze(options):
 		transit_matrix.write_tmx(transit_matrix_filename)
 	
 	print("\n&&&& model inputs")
-	print(options["travel_mode"])
-	print(options["origin_filename"])
-	print(options["destination_filename"])
-	print(options["model_origin_field_mapping"])
-	print(options["model_destination_field_mapping"])
-	print(transit_matrix_filename)
-	print(options["decay_function"])
-	print(options["maximum_travel_time"])
-	print(options["category_weight_dict"])
+	print("travel_mode", options["travel_mode"])
+	print("origin_filename", options["origin_filename"])
+	print("destination_filename", options["destination_filename"])
+	print("model_origin_field_mapping", options["model_origin_field_mapping"])
+	print("model_destination_field_mapping", options["model_destination_field_mapping"])
+	print("transit matrix", transit_matrix_filename)
+	print("decay_function", options["decay_function"])
+	print("maximum_travel_time", options["maximum_travel_time"])
+	print("categories", options["categories"])
+	print("category_weight_dict", options["category_weight_dict"])
 	
 	access_outputs = []
 	# If any of the access metrics' checkboxes were checked,
@@ -306,7 +310,6 @@ def analyze(options):
 		
 	if options["access_1_checked"] or options["access_2_checked"] or options["access_3_checked"]:
 		print("len access outputs", len(access_outputs))
-		print(access_outputs)
 		access_df = access_outputs[0]
 		if len(access_outputs) > 1:
 			for i in range(1,len(access_outputs)):

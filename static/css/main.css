@@ -344,6 +344,7 @@ label[for=facility_weight_list], label[for=epsilonValueSlider] {
   display: inline;
 }
 
+/* spinner showing that data is processing */
 .modal {
     display:    none;
     position:   fixed;
