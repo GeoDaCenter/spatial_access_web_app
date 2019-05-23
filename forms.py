@@ -42,7 +42,7 @@ class InputForm(FlaskForm):
 
 	# Advanced settings
 	# walk_speed = 
-	decay_function = SelectField("Distance decay function<i class='material-icons infoButton' id='decayFunctionInfoButton'>info</i>",
+	decay_function = SelectField("Distance decay function <i class='material-icons md-18 infoButton' id='decayFunctionInfoButton' title='Click to view info text'>info</i>",
 		choices=[('linear', 'Linear'),
 		('root', 'Inverse square root'),
 		('logit', 'Logit')])
@@ -58,16 +58,16 @@ class InputForm(FlaskForm):
 	# 	'is used.  If a dictionary is supplied, if it contains a "Default"&#013;'
 	# 	'list (as above), then the default weights are applied to any&#013;'
 	# 	'category not listed in the dictionary.')
-	custom_weight_dict = StringField("Relative weight for the n<sup>th</sup> facility of the same category<i class='material-icons infoButton' id='facilityWeightListInfoButton'>info</i>")
+	custom_weight_dict = StringField("Relative weight for the n<sup>th</sup> facility of the same category <i class='material-icons md-18 infoButton' id='facilityWeightListInfoButton' title='Click to view info text'>info</i>")
 
 
 	origin_file = FileField('Origin file', [validators.DataRequired('Please specify an origin file.')])
-	origin_unique_id_field = SelectFieldWithoutPreValidation("Unique ID field<i class='material-icons infoButton' id='originUniqueIdFieldButton'>info</i>", choices=[])
+	origin_unique_id_field = SelectFieldWithoutPreValidation("Unique ID field <i class='material-icons  md-18 infoButton' id='originUniqueIdFieldButton' title='Click to view info text'>info</i>", choices=[])
 	origin_latitude_field = SelectFieldWithoutPreValidation("Latitude (y-coordinate) field", choices=[])
 	origin_longitude_field = SelectFieldWithoutPreValidation("Longitude (x-coordinate) field", choices=[])
 	origin_population_field = SelectFieldWithoutPreValidation("Population field", choices=[])
 	destination_file = FileField('Destination file', [validators.DataRequired('Please specify a destination file.')])
-	destination_unique_id_field = SelectFieldWithoutPreValidation("Unique id field<i class='material-icons infoButton' id='destinationUniqueIdFieldButton'>info</i>", choices=[])
+	destination_unique_id_field = SelectFieldWithoutPreValidation("Unique id field <i class='material-icons  md-18 infoButton' id='destinationUniqueIdFieldButton' title='Click to view info text'>info</i>", choices=[])
 	destination_latitude_field = SelectFieldWithoutPreValidation("Latitude (y-coordinate) field", choices=[])
 	destination_longitude_field = SelectFieldWithoutPreValidation("Longitude (x-coordinate) field", choices=[])
 	destination_capacity_field = SelectFieldWithoutPreValidation("Capacity field", choices=[])

@@ -317,7 +317,7 @@ function getDestinationCategoryOptions() {
 }
 
 function handleInformationButtons() {
-	
+	console.log("handleInformationButtons")
 	var dialogTitle = "";
 	var dialogText = "";
 
@@ -331,6 +331,7 @@ function handleInformationButtons() {
 	$(".infoButton").click(function() {
 		switch (event.target.id) {
 			case "decayFunctionInfoButton":
+				console.log("decay")
 				dialogTitle = window.infoTitleDistanceDecayFunction;
 				dialogText = window.infoTextDistanceDecayFunction;
 				break;

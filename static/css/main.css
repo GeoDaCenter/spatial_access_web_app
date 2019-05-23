@@ -367,3 +367,8 @@ body.loading .modal {
 body.loading .modal {
     display: block;
 }
+
+.material-icons.md-18 {
+    font-size: 18px;
+    vertical-align: bottom;
+}

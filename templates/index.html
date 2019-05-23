@@ -32,9 +32,9 @@
     <main class="main-section">
         <div class="container">
             <div class="section-content">
-                <!-- <div id="dialog" title="Information">
+                <div id="dialog" title="Information">
                   <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
-                </div> -->
+                </div>
                 <h2>What do you want to calculate?</h2>
                 <form method="POST" action="/" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
@@ -70,7 +70,7 @@
                         </div>
                         <!-- <div>
                             <ul>
-                                <li>HSSA score<i class='material-icons infoButton' id='HSSAScoreInfoButton'>info</i></li>
+                                <li>HSSA score<i class='material-icons md-18 infoButton' id='HSSAScoreInfoButton'>info</i></li>
                                 <li>Two-step floating catchment area score</li>
                                 <li>Accessible facility count</li>
                                 <li>Sum of accessible facilities' capacities</li>
@@ -110,7 +110,7 @@
                     
                     <div class="form-group" id="advancedSettingsLabelContainer">
                         <label id="advancedSettingsLabel">Advanced settings</label>
-                        <i class="material-icons" title="Advanced Access Measure Settings" id="advancedSettingsButton">settings</i>
+                        <i class="material-icons md-18" title="Click to access advanced settings " id="advancedSettingsButton">settings</i>
                     </div>
                     <div class="form-group" id="advancedSettingsContainer">
 
@@ -130,7 +130,7 @@
                         </div>
                         <div class="form-group">
                             <label id="epsilonValueSliderLabel" for="epsilonValueSlider">Epsilon value</label>
-                            <i class='material-icons infoButton' id='epsilonValueSliderInfoButton'>info</i>
+                            <i class='material-icons md-18 infoButton' id='epsilonValueSliderInfoButton'>info</i>
                             <br>
                             {% if request.form["epsilonValueSlider"] %}
                                 <input id="epsilonValueSliderId" name="epsilonValueSlider" class="slider" type="range" value={{request.form["epsilonValueSlider"]}} min="0" max="0.2"  step="0.01" oninput="epsilonValueSliderValueId.value = epsilonValueSliderId.value" />
